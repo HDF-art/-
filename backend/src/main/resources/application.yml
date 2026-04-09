@@ -1,0 +1,59 @@
+server:
+  port: 8100
+  servlet:
+    context-path: /api
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: agri-platform
+  
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/agri_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: admin123
+  
+  mail:
+    host: smtp.yeah.net
+    port: 465
+    username: admpchina@yeah.net
+    password: PHZt3NE4DtTTJSy8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+
+  redis:
+    host: localhost
+    port: 6379
+    password: AgriSecure2026!
+    database: 0
+
+jwt:
+  secret: AgriPlatformSecretKey2026VeryLongSecureKey
+  expiration: 86400000
+
+model:
+  service:
+    url: http://localhost:5000/api/crop-disease
+  save-path: /home/ubuntu/农业大数据联合建模平台/models
+
+upload:
+  image-path: /home/ubuntu/农业大数据联合建模平台/upload/images
+  model-path: /home/ubuntu/农业大数据联合建模平台/upload/models
+  max-size: 10485760
+
+logging:
+  level:
+    com.agri: info
+
+# Z.ai API配置
+z-ai:
+  api-key: 84b0c10a19954030994339f9101197f5.T8hZJQvRlisAOpmE
+  model: glm-5.1
+  url: https://open.bigmodel.cn/api/paas/v4/chat/completions

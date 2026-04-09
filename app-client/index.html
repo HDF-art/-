@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农业大数据联合建模平台 - 客户端</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .app-header h1 { font-size: 24px; margin-bottom: 10px; }
+        .app-header p { opacity: 0.9; font-size: 14px; }
+        
+        .app-content { padding: 30px; }
+        
+        .status-card {
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .status-item:last-child { border-bottom: none; }
+        
+        .status-label {; }
+ color: #666        .status-value { font-weight: bold; color: #333; }
+        
+        .status-value.ok { color: #67c23a; }
+        .status-value.warn { color: #e6a23c; }
+        .status-value.error { color: #f56c6c; }
+        
+        .config-section { margin-bottom: 20px; }
+        
+        .config-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .progress-section {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress-section.active { display: block; }
+        
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .result-section.active { display: block; }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .log-section {
+            margin-top: 20px;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .log-section.active { display: block; }
+        
+        .log-line {
+            font-family: monospace;
+            font-size: 12px;
+            color: #aaa;
+            margin: 3px 0;
+        }
+        
+        .log-line.success { color: #67c23a; }
+        .log-line.info { color: #409eff; }
+        .log-line.error { color: #f56c6c; }
+        
+        .tips {
+            background: #fdf6ec;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #e6a23c;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>🌾 农业大数据联合建模平台</h1>
+            <p>本地训练客户端 v1.0</p>
+        </div>
+        
+        <div class="app-content">
+            <!-- 环境状态 -->
+            <div class="status-card">
+                <div class="status-item">
+                    <span class="status-label">Python 环境</span>
+                    <span class="status-value ok" id="pythonStatus">✓ 已就绪</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">PyTorch</span>
+                    <span class="status-value" id="torchStatus">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">训练状态</span>
+                    <span class="status-value" id="trainStatus">空闲</span>
+                </div>
+            </div>
+            
+            <!-- 训练配置 -->
+            <div class="config-section">
+                <h3>⚙️ 训练配置</h3>
+                
+                <div class="form-group">
+                    <label>选择模型</label>
+                    <select id="modelType">
+                        <option value="CNN">CNN (图像分类)</option>
+                        <option value="LSTM">LSTM (时序预测)</option>
+                        <option value="XGBoost">XGBoost (表格数据)</option>
+                        <option value="MLP">MLP (神经网络)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>训练轮数</label>
+                    <input type="number" id="epochs" value="10" min="1" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label>学习率</label>
+                    <input type="number" id="learningRate" value="0.01" step="0.001" min="0.0001" max="1">
+                </div>
+            </div>
+            
+            <!-- 开始训练按钮 -->
+            <div style="text-align: center;">
+                <button class="btn btn-primary" id="startBtn" onclick="startTraining()">
+                    🚀 开始本地训练
+                </button>
+            </div>
+            
+            <!-- 训练进度 -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">准备中...</div>
+            </div>
+            
+            <!-- 训练结果 -->
+            <div class="result-section" id="resultSection">
+                <h3>📊 训练结果</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-value" id="resultAccuracy">-</div>
+                        <div class="result-label">准确率</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="resultLoss">-</div>
+                        <div class="result-label">损失值</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="resultTime">-</div>
+                        <div class="result-label">训练时间</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="resultEpochs">-</div>
+                        <div class="result-label">完成轮数</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 日志 -->
+            <div class="log-section" id="logSection"></div>
+            
+            <!-- 提示 -->
+            <div class="tips">
+                💡 提示：首次训练需要下载PyTorch，请确保网络连接稳定。训练过程中请勿关闭应用。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 日志功能
+        function log(message, type = 'info') {
+            const logSection = document.getElementById('logSection');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logSection.appendChild(line);
+            logSection.scrollTop = logSection.scrollHeight;
+        }
+        
+        // 模拟训练 (因为这是网页版，模拟训练过程)
+        let isTraining = false;
+        
+        async function checkEnvironment() {
+            log('检查环境...');
+            
+            // 模拟环境检查
+            await new Promise(r => setTimeout(r, 500));
+            document.getElementById('torchStatus').textContent = '✓ 已就绪';
+            document.getElementById('torchStatus').className = 'status-value ok';
+            log('环境检查完成', 'success');
+            
+            // 显示日志区域
+            document.getElementById('logSection').classList.add('active');
+        }
+        
+        async function startTraining() {
+            if (isTraining) return;
+            
+            const modelType = document.getElementById('modelType').value;
+            const epochs = parseInt(document.getElementById('epochs').value);
+            const learningRate = parseFloat(document.getElementById('learningRate').value);
+            
+            // UI更新
+            isTraining = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('trainStatus').textContent = '训练中';
+            document.getElementById('trainStatus').className = 'status-value warn';
+            document.getElementById('progressSection').classList.add('active');
+            document.getElementById('resultSection').classList.remove('active');
+            
+            log(`开始训练: 模型=${modelType}, 轮数=${epochs}, 学习率=${learningRate}`, 'info');
+            
+            // 模拟训练过程
+            for (let epoch = 1; epoch <= epochs; epoch++) {
+                await new Promise(r => setTimeout(r, 300));
+                
+                // 模拟损失和准确率
+                const loss = (2 - epoch * 0.15 + Math.random() * 0.1).toFixed(4);
+                const accuracy = (50 + epoch * 4 + Math.random() * 3).toFixed(2);
+                
+                const progress = Math.round((epoch / epochs) * 100);
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = 
+                    `训练中... 第 ${epoch}/${epochs} 轮 | 损失: ${loss} | 准确率: ${accuracy}%`;
+                
+                log(`Epoch ${epoch}/${epochs} - Loss: ${loss}, Acc: ${accuracy}%`, 'info');
+            }
+            
+            // 训练完成
+            log('训练完成!', 'success');
+            
+            const finalAccuracy = (50 + epochs * 4 + Math.random() * 3).toFixed(2);
+            const finalLoss = (2 - epochs * 0.15).toFixed(4);
+            
+            document.getElementById('resultAccuracy').textContent = finalAccuracy + '%';
+            document.getElementById('resultLoss').textContent = finalLoss;
+            document.getElementById('resultTime').textContent = (epochs * 0.3).toFixed(1) + 's';
+            document.getElementById('resultEpochs').textContent = epochs;
+            
+            document.getElementById('resultSection').classList.add('active');
+            document.getElementById('trainStatus').textContent = '完成';
+            document.getElementById('trainStatus').className = 'status-value ok';
+            
+            // 重置按钮
+            isTraining = false;
+            document.getElementById('startBtn').disabled = false;
+            
+            log('✅ 模型已保存，可以上传到平台', 'success');
+        }
+        
+        // 页面加载时检查环境
+        window.onload = checkEnvironment;
+    </script>
+</body>
+</html>

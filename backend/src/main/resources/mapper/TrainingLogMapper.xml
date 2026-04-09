@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agri.mapper.TrainingLogMapper">
+
+    <!-- 根据任务ID获取日志列表 -->
+    <select id="selectByTaskId" resultType="com.agri.model.TrainingLog">
+        SELECT * FROM training_log
+        WHERE task_id = #{taskId}
+        ORDER BY timestamp DESC
+    </select>
+
+    <!-- 根据任务ID和日志类型获取日志列表 -->
+    <select id="selectByTaskIdAndType" resultType="com.agri.model.TrainingLog">
+        SELECT * FROM training_log
+        WHERE task_id = #{taskId} AND log_type = #{logType}
+        ORDER BY timestamp DESC
+    </select>
+
+    <!-- 获取任务的最新日志 -->
+    <select id="selectLatestByTaskId" resultType="com.agri.model.TrainingLog">
+        SELECT * FROM training_log
+        WHERE task_id = #{taskId}
+        ORDER BY timestamp DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>
