@@ -89,6 +89,7 @@ com/agri/service/SmsSenderService.class
 com/agri/mapper/DataTransactionMapper.class
 com/agri/model/Model.class
 com/agri/service/DatasetService.class
+com/agri/config/JwtAuthenticationFilter.class
 com/agri/controller/UserController.class
 com/agri/config/SecurityConfig.class
 com/agri/service/RecognitionRecordService.class

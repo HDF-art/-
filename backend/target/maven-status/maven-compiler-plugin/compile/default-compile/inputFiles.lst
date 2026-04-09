@@ -17,6 +17,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/TrainingTaskServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/SendNotificationDTO.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/User.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/DataTransactionMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/DataCirculationMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/UserServiceImpl.java
