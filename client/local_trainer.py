@@ -355,7 +355,13 @@ class LocalTrainer:
         y_train_t = torch.LongTensor(y_train)
         
         train_dataset = TensorDataset(X_train_t, y_train_t)
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        train_loader = DataLoader(
+            train_dataset, 
+            batch_size=batch_size, 
+            shuffle=True,
+            num_workers=4,
+            pin_memory=True
+        )
         
         # 训练配置
         criterion = nn.CrossEntropyLoss()
@@ -390,6 +396,9 @@ class LocalTrainer:
                 accuracy = (predicted.cpu().numpy() == y_test).mean()
             
             print(f"  损失: {avg_loss:.4f} | 准确率: {accuracy*100:.2f}%")
+        
+        # 转换为FP16节省网络带宽和存储
+        model.half()
         
         # 保存模型
         model_path = f"model_{model_type}_{int(time.time() * 1000)}.pt"

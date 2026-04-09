@@ -5,6 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -19,6 +20,7 @@ public class EmailService {
     /**
      * 发送验证码邮件 - 美化版HTML
      */
+    @Async
     public boolean sendVerificationCode(String toEmail, String code) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -83,6 +85,7 @@ public class EmailService {
     /**
      * 发送欢迎邮件
      */
+    @Async
     public boolean sendWelcomeEmail(String toEmail, String username) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

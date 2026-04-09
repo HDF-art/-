@@ -50,7 +50,15 @@ public class DataManagementController {
             // 保存文件
             String filename = System.currentTimeMillis() + "_" + safeFilename;
             String filepath = userDir + filename;
-            Files.write(Paths.get(filepath), file.getBytes());
+            
+            try (InputStream in = file.getInputStream();
+                 OutputStream out = new FileOutputStream(filepath)) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
             
             // 记录审计日志
             auditLogService.log(userId, "UPLOAD", "DATA", 
@@ -108,8 +116,26 @@ public class DataManagementController {
      * 下载数据文件
      */
     @GetMapping("/download")
-    public byte[] download(@RequestParam String filename, @RequestParam String userId) throws IOException {
+    public void download(@RequestParam String filename, @RequestParam String userId, javax.servlet.http.HttpServletResponse response) throws IOException {
         String filepath = UPLOAD_DIR + userId + "/" + filename;
-        return Files.readAllBytes(Paths.get(filepath));
+        File file = new File(filepath);
+        if (!file.exists()) {
+            response.setStatus(404);
+            return;
+        }
+        
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.setContentLengthLong(file.length());
+        
+        try (InputStream in = new FileInputStream(file);
+             OutputStream out = response.getOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.flush();
+        }
     }
 }

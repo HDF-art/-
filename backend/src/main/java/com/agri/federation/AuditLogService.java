@@ -1,6 +1,7 @@
 package com.agri.federation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -16,6 +17,7 @@ public class AuditLogService {
     /**
      * 记录操作日志
      */
+    @Async
     public void log(String username, String operation, String resource, String details, String ip) {
         AuditLog auditLog = new AuditLog();
         auditLog.setId(UUID.randomUUID().toString());

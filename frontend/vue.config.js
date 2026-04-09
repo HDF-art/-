@@ -1,3 +1,5 @@
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+
 module.exports = {
   // 基本路径
   publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
@@ -51,7 +53,16 @@ module.exports = {
       alias: {
         '@': require('path').resolve(__dirname, 'src')
       }
-    }
+    },
+    plugins: [
+      new CompressionWebpackPlugin({
+        filename: '[path][base].gz',
+        algorithm: 'gzip',
+        test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i,
+        threshold: 10240,
+        minRatio: 0.8
+      })
+    ]
   },
   
   // 链式webpack配置

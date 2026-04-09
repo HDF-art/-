@@ -51,7 +51,7 @@
             
             <!-- 图片预览 -->
             <div v-if="imageUrl" class="image-preview">
-              <img :src="imageUrl" alt="预览图" class="preview-img" />
+              <img v-lazy="imageUrl" alt="预览图" class="preview-img" />
               <el-button 
                 type="danger" 
                 icon="el-icon-delete" 
