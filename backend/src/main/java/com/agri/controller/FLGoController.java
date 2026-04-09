@@ -18,9 +18,9 @@ public class FLGoController {
     
     @Autowired
     private TrainingTaskMapper trainingTaskMapper;
-    
-    // 服务器IP配置
-    private static String serverIp = null;
+
+    @Autowired
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
     
     /**
      * 配置服务器IP
@@ -28,13 +28,17 @@ public class FLGoController {
     @PostMapping("/config/server")
     public Map<String, Object> configServer(@RequestBody Map<String, String> params) {
         Map<String, Object> result = new HashMap<>();
+        String taskIdStr = params.get("taskId");
         String ip = params.get("serverIp");
-        if (ip == null || ip.isEmpty()) {
-            result.put("success", false);
-            result.put("message", "服务器IP不能为空");
-            return result;
+        if (taskIdStr != null && ip != null) {
+            TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskIdStr));
+            if (task != null) {
+                Map<String, Object> taskParams = parseParameters(task.getParameters());
+                taskParams.put("serverIp", ip);
+                saveParameters(task, taskParams);
+                trainingTaskMapper.updateById(task);
+            }
         }
-        serverIp = ip;
         result.put("success", true);
         result.put("message", "服务器IP已配置: " + ip);
         return result;
@@ -44,9 +48,17 @@ public class FLGoController {
      * 获取服务器IP
      */
     @GetMapping("/config/server")
-    public Map<String, Object> getServerConfig() {
+    public Map<String, Object> getServerConfig(@RequestParam(required = false) String taskId) {
         Map<String, Object> result = new HashMap<>();
-        result.put("serverIp", serverIp);
+        if (taskId != null) {
+            TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
+            if (task != null) {
+                Map<String, Object> taskParams = parseParameters(task.getParameters());
+                result.put("serverIp", taskParams.get("serverIp"));
+                return result;
+            }
+        }
+        result.put("serverIp", null);
         return result;
     }
     
@@ -55,10 +67,7 @@ public class FLGoController {
             return new HashMap<>();
         }
         try {
-            // Very simple JSON string parsing bypass since we control creation
-            // In a real app, use ObjectMapper
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            return mapper.readValue(parameters, Map.class);
+            return objectMapper.readValue(parameters, Map.class);
         } catch (Exception e) {
             return new HashMap<>();
         }
@@ -66,8 +75,7 @@ public class FLGoController {
     
     private void saveParameters(TrainingTask task, Map<String, Object> params) {
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            task.setParameters(mapper.writeValueAsString(params));
+            task.setParameters(objectMapper.writeValueAsString(params));
         } catch (Exception e) {
             task.setParameters("{}");
         }
@@ -194,7 +202,9 @@ public class FLGoController {
         }
         
         String selectedServer = participants.get(serverIndex);
-        serverIp = selectedServer;
+        taskParams.put("serverIp", selectedServer);
+        saveParameters(task, taskParams);
+        trainingTaskMapper.updateById(task);
         
         result.put("success", true);
         result.put("serverIp", selectedServer);
@@ -285,7 +295,7 @@ public class FLGoController {
         
         result.put("success", true);
         result.put("message", "任务已启动");
-        result.put("serverIp", serverIp);
+        result.put("serverIp", taskParams.get("serverIp"));
         result.put("participants", participants);
         
         return result;

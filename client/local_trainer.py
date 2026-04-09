@@ -5,6 +5,7 @@
 """
 import os
 import sys
+import time
 import subprocess
 import platform
 import shutil
@@ -391,7 +392,7 @@ class LocalTrainer:
             print(f"  损失: {avg_loss:.4f} | 准确率: {accuracy*100:.2f}%")
         
         # 保存模型
-        model_path = f"model_{model_type}_{int(os.times().elapsed * 1000)}.pt"
+        model_path = f"model_{model_type}_{int(time.time() * 1000)}.pt"
         torch.save(model.state_dict(), model_path)
         print_success(f"模型已保存: {model_path}")
         

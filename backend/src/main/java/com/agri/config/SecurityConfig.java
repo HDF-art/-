@@ -45,7 +45,6 @@ public class SecurityConfig {
                     "/swagger-ui.html",
                     "/v2/api-docs",
                     "/webjars/**",
-                    "/upload/**",
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()
@@ -60,7 +59,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*", "https://admp.online"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
