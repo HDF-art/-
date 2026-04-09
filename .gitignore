@@ -1,0 +1,29 @@
+# 忽略大模型
+*.pth
+*.pt
+*.bin
+*.pkl
+models/
+
+# 忽略Java打包文件
+target/
+*.jar
+*.war
+*.ear
+
+# 忽略上传的图片/文件
+upload/
+uploads/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+
+# 忽略缓存
+*.log
+*.tmp
+*.cache
+.DS_Store
+__pycache__/
+*.pyc
