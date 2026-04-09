@@ -57,21 +57,7 @@ class FederatedClient:
             return response.json()
         return None
     
-    def upload_local_update(self, task_id, model_params, metrics):
-        """上传本地训练更新"""
-        headers = {"Authorization": f"Bearer {self.token}"} if self.token else {}
-        response = requests.post(
-            f"{self.server_url}/api/federation/client/update",
-            json={
-                "taskId": task_id,
-                "clientId": self.client_id,
-                "modelParams": model_params,
-                "metrics": metrics
-            },
-            headers=headers
-        )
-        return response.json()
-    
+
     def train_local(self, model_type="CNN", epochs=5, batch_size=32, learning_rate=0.01):
         """
         本地训练模型
@@ -223,9 +209,8 @@ class FederatedClient:
             params, metrics = self.train_local(model_type, epochs=epochs)
             print(f"  训练完成: Accuracy={metrics['accuracy']:.4f}")
             
-            # 3. 上传更新
-            result = self.upload_local_update(task_id, params, metrics)
-            print(f"  上传结果: {result}")
+            # 3. 本步骤原本上传更新，已被废除
+            print(f"  不再上传模型权重到Java服务端。")
         
         print("\n=== 训练完成 ===")
         return True

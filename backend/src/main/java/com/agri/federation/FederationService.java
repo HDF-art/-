@@ -40,22 +40,7 @@ public class FederationService {
         return String.valueOf(task.getId());
     }
     
-    public double[] fedAvg(List<double[]> clientModels, int[] clientWeights) {
-        if (clientModels.isEmpty()) return null;
-        int modelSize = clientModels.get(0).length;
-        double[] aggregated = new double[modelSize];
-        int totalWeight = 0;
-        for (int w : clientWeights) totalWeight += w;
-        for (int i = 0; i < modelSize; i++) {
-            double sum = 0;
-            for (int j = 0; j < clientModels.size(); j++) {
-                sum += clientModels.get(j)[i] * clientWeights[j];
-            }
-            aggregated[i] = sum / totalWeight;
-        }
-        return aggregated;
-    }
-    
+    // FedAvg removed per user request
     public TrainingTask getTask(String taskId) {
         try {
             return trainingTaskMapper.selectById(Long.valueOf(taskId));
