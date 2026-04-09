@@ -1,11 +1,11 @@
 package com.agri.controller;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import com.agri.mapper.TrainingTaskMapper;
+import com.agri.model.TrainingTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
 
 /**
  * FLGo联邦学习控制器
@@ -16,14 +16,9 @@ import java.util.concurrent.TimeUnit;
 @CrossOrigin
 public class FLGoController {
     
-    // 任务存储
-    private static final Cache<String, Map<String, Object>> tasks = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .build();
-    // 参与客户端记录
-    private static final Cache<String, List<String>> taskParticipants = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .build();
+    @Autowired
+    private TrainingTaskMapper trainingTaskMapper;
+    
     // 服务器IP配置
     private static String serverIp = null;
     
@@ -55,6 +50,29 @@ public class FLGoController {
         return result;
     }
     
+    private Map<String, Object> parseParameters(String parameters) {
+        if (parameters == null || parameters.isEmpty()) {
+            return new HashMap<>();
+        }
+        try {
+            // Very simple JSON string parsing bypass since we control creation
+            // In a real app, use ObjectMapper
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            return mapper.readValue(parameters, Map.class);
+        } catch (Exception e) {
+            return new HashMap<>();
+        }
+    }
+    
+    private void saveParameters(TrainingTask task, Map<String, Object> params) {
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            task.setParameters(mapper.writeValueAsString(params));
+        } catch (Exception e) {
+            task.setParameters("{}");
+        }
+    }
+    
     /**
      * 创建联邦学习任务
      */
@@ -62,7 +80,6 @@ public class FLGoController {
     public Map<String, Object> createTask(@RequestBody Map<String, Object> params) {
         Map<String, Object> result = new HashMap<>();
         
-        String taskId = UUID.randomUUID().toString();
         String taskName = (String) params.getOrDefault("taskName", "默认任务");
         String dataset = (String) params.getOrDefault("dataset", "mnist");
         String algorithm = (String) params.getOrDefault("algorithm", "fedavg");
@@ -70,24 +87,37 @@ public class FLGoController {
         int numRounds = (int) params.getOrDefault("numRounds", 10);
         int numEpochs = (int) params.getOrDefault("numEpochs", 1);
         
-        Map<String, Object> task = new HashMap<>();
-        task.put("taskId", taskId);
-        task.put("taskName", taskName);
-        task.put("dataset", dataset);
-        task.put("algorithm", algorithm);
-        task.put("numClients", numClients);
-        task.put("numRounds", numRounds);
-        task.put("numEpochs", numEpochs);
-        task.put("status", "CREATED");
-        task.put("createTime", System.currentTimeMillis());
+        TrainingTask task = new TrainingTask();
+        task.setName(taskName);
+        task.setDatasetPath(dataset);
+        task.setModelType(algorithm);
+        task.setStatus("CREATED");
+        task.setCreatedAt(LocalDateTime.now());
         
-        tasks.get(taskId, k -> task);
-        taskParticipants.get(taskId, k -> new ArrayList<>());
+        Map<String, Object> taskParams = new HashMap<>();
+        taskParams.put("numClients", numClients);
+        taskParams.put("numRounds", numRounds);
+        taskParams.put("numEpochs", numEpochs);
+        taskParams.put("participants", new ArrayList<String>());
+        
+        saveParameters(task, taskParams);
+        trainingTaskMapper.insert(task);
         
         result.put("success", true);
-        result.put("taskId", taskId);
+        result.put("taskId", String.valueOf(task.getId()));
         result.put("message", "任务创建成功");
-        result.put("task", task);
+        
+        Map<String, Object> taskMap = new HashMap<>();
+        taskMap.put("taskId", String.valueOf(task.getId()));
+        taskMap.put("taskName", taskName);
+        taskMap.put("dataset", dataset);
+        taskMap.put("algorithm", algorithm);
+        taskMap.put("numClients", numClients);
+        taskMap.put("numRounds", numRounds);
+        taskMap.put("numEpochs", numEpochs);
+        taskMap.put("status", "CREATED");
+        taskMap.put("createTime", System.currentTimeMillis());
+        result.put("task", taskMap);
         
         return result;
     }
@@ -99,25 +129,30 @@ public class FLGoController {
     public Map<String, Object> registerParticipant(@RequestBody Map<String, String> params) {
         Map<String, Object> result = new HashMap<>();
         
-        String taskId = params.get("taskId");
+        String taskIdStr = params.get("taskId");
         String clientIp = params.get("clientIp");
-        String clientName = params.get("clientName");
         
-        if (taskId == null || clientIp == null) {
+        if (taskIdStr == null || clientIp == null) {
             result.put("success", false);
             result.put("message", "缺少必要参数");
             return result;
         }
         
-        if (tasks.getIfPresent(taskId) == null) {
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskIdStr));
+        if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
-        List<String> participants = taskParticipants.get(taskId, k -> new ArrayList<>());
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        List<String> participants = (List<String>) taskParams.getOrDefault("participants", new ArrayList<String>());
+        
         if (!participants.contains(clientIp)) {
             participants.add(clientIp);
+            taskParams.put("participants", participants);
+            saveParameters(task, taskParams);
+            trainingTaskMapper.updateById(task);
         }
         
         result.put("success", true);
@@ -134,17 +169,20 @@ public class FLGoController {
     public Map<String, Object> selectServer(@RequestBody Map<String, String> params) {
         Map<String, Object> result = new HashMap<>();
         
-        String taskId = params.get("taskId");
+        String taskIdStr = params.get("taskId");
         int serverIndex = params.get("serverIndex") != null ? 
             Integer.parseInt(params.get("serverIndex")) : 0;
         
-        if (tasks.getIfPresent(taskId) == null) {
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskIdStr));
+        if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
-        List<String> participants = taskParticipants.getIfPresent(taskId);
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        List<String> participants = (List<String>) taskParams.get("participants");
+        
         if (participants == null || participants.isEmpty()) {
             result.put("success", false);
             result.put("message", "没有参与者");
@@ -172,16 +210,26 @@ public class FLGoController {
     public Map<String, Object> getTask(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        Map<String, Object> task = tasks.getIfPresent(taskId);
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
         if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
+        Map<String, Object> taskInfo = new HashMap<>();
+        taskInfo.put("taskId", String.valueOf(task.getId()));
+        taskInfo.put("taskName", task.getName());
+        taskInfo.put("dataset", task.getDatasetPath());
+        taskInfo.put("algorithm", task.getModelType());
+        taskInfo.put("status", task.getStatus());
+        
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        taskInfo.putAll(taskParams);
+        
         result.put("success", true);
-        result.put("task", task);
-        result.put("participants", taskParticipants.getIfPresent(taskId));
+        result.put("task", taskInfo);
+        result.put("participants", taskParams.get("participants"));
         
         return result;
     }
@@ -192,8 +240,19 @@ public class FLGoController {
     @GetMapping("/tasks")
     public Map<String, Object> listTasks() {
         Map<String, Object> result = new HashMap<>();
+        List<TrainingTask> allTasks = trainingTaskMapper.selectList(null);
+        List<Map<String, Object>> tasks = new ArrayList<>();
+        
+        for (TrainingTask task : allTasks) {
+            Map<String, Object> taskInfo = new HashMap<>();
+            taskInfo.put("taskId", String.valueOf(task.getId()));
+            taskInfo.put("taskName", task.getName());
+            taskInfo.put("status", task.getStatus());
+            tasks.add(taskInfo);
+        }
+        
         result.put("success", true);
-        result.put("tasks", tasks.asMap().values());
+        result.put("tasks", tasks);
         return result;
     }
     
@@ -204,22 +263,25 @@ public class FLGoController {
     public Map<String, Object> startTask(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        Map<String, Object> task = tasks.getIfPresent(taskId);
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
         if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
-        List<String> participants = taskParticipants.getIfPresent(taskId);
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        List<String> participants = (List<String>) taskParams.get("participants");
+        
         if (participants == null || participants.size() < 2) {
             result.put("success", false);
             result.put("message", "参与者数量不足，至少需要2个");
             return result;
         }
         
-        task.put("status", "RUNNING");
-        task.put("startTime", System.currentTimeMillis());
+        task.setStatus("RUNNING");
+        task.setStartTime(LocalDateTime.now());
+        trainingTaskMapper.updateById(task);
         
         result.put("success", true);
         result.put("message", "任务已启动");
@@ -236,15 +298,16 @@ public class FLGoController {
     public Map<String, Object> stopTask(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        Map<String, Object> task = tasks.getIfPresent(taskId);
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
         if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
-        task.put("status", "STOPPED");
-        task.put("endTime", System.currentTimeMillis());
+        task.setStatus("STOPPED");
+        task.setEndTime(LocalDateTime.now());
+        trainingTaskMapper.updateById(task);
         
         result.put("success", true);
         result.put("message", "任务已停止");
@@ -259,21 +322,22 @@ public class FLGoController {
     public Map<String, Object> getTaskStatus(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        Map<String, Object> task = tasks.getIfPresent(taskId);
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
         if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        
         Map<String, Object> status = new HashMap<>();
-        status.put("taskId", taskId);
-        status.put("status", task.get("status"));
-        status.put("currentRound", task.getOrDefault("currentRound", 0));
-        status.put("totalRounds", task.get("numRounds"));
-        status.put("accuracy", task.getOrDefault("accuracy", 0.0));
-        status.put("loss", task.getOrDefault("loss", 0.0));
-        status.put("participants", taskParticipants.getIfPresent(taskId));
+        status.put("taskId", String.valueOf(task.getId()));
+        status.put("status", task.getStatus());
+        status.put("currentRound", taskParams.getOrDefault("currentRound", 0));
+        status.put("totalRounds", taskParams.get("numRounds"));
+        status.put("accuracy", task.getAccuracy());
+        status.put("participants", taskParams.get("participants"));
         
         result.put("success", true);
         result.put("status", status);
@@ -288,11 +352,18 @@ public class FLGoController {
     public Map<String, Object> getParticipants(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        List<String> participants = taskParticipants.getIfPresent(taskId);
-        if (participants == null) {
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
+        if (task == null) {
             result.put("success", false);
-            result.put("message", "任务不存在或没有参与者");
+            result.put("message", "任务不存在");
             return result;
+        }
+        
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        List<String> participants = (List<String>) taskParams.get("participants");
+        
+        if (participants == null) {
+            participants = new ArrayList<>();
         }
         
         result.put("success", true);
@@ -309,14 +380,16 @@ public class FLGoController {
     public Map<String, Object> downloadScript(@PathVariable String taskId) {
         Map<String, Object> result = new HashMap<>();
         
-        Map<String, Object> task = tasks.getIfPresent(taskId);
+        TrainingTask task = trainingTaskMapper.selectById(Long.valueOf(taskId));
         if (task == null) {
             result.put("success", false);
             result.put("message", "任务不存在");
             return result;
         }
         
-        List<String> participants = taskParticipants.getIfPresent(taskId);
+        Map<String, Object> taskParams = parseParameters(task.getParameters());
+        List<String> participants = (List<String>) taskParams.get("participants");
+        
         if (participants == null || participants.isEmpty()) {
             result.put("success", false);
             result.put("message", "没有参与者");
@@ -326,12 +399,12 @@ public class FLGoController {
         String selectedServer = participants.get(0);
         
         Map<String, Object> scriptConfig = new HashMap<>();
-        scriptConfig.put("taskId", taskId);
+        scriptConfig.put("taskId", String.valueOf(task.getId()));
         scriptConfig.put("serverIp", selectedServer);
         scriptConfig.put("participants", participants);
-        scriptConfig.put("algorithm", task.get("algorithm"));
-        scriptConfig.put("numRounds", task.get("numRounds"));
-        scriptConfig.put("numEpochs", task.get("numEpochs"));
+        scriptConfig.put("algorithm", task.getModelType());
+        scriptConfig.put("numRounds", taskParams.get("numRounds"));
+        scriptConfig.put("numEpochs", taskParams.get("numEpochs"));
         
         result.put("success", true);
         result.put("scriptConfig", scriptConfig);

@@ -158,7 +158,7 @@ class EnvironmentSetup:
         
         # 创建虚拟环境
         try:
-            os.system(f'{sys.executable} -m venv {venv_path}')
+            subprocess.run([sys.executable, "-m", "venv", venv_path], check=True)
             print_success(f"虚拟环境创建成功: {venv_path}")
             return True
         except Exception as e:
@@ -197,7 +197,7 @@ class EnvironmentSetup:
         # 安装CPU版本的PyTorch
         try:
             # 先安装CPU版PyTorch
-            os.system(f"{self.pip} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu")
+            subprocess.run([sys.executable, "-m", "pip", "install", "torch", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cpu"], check=True)
             print_success("PyTorch安装完成")
         except Exception as e:
             print_warning(f"PyTorch安装可能失败: {e}")
@@ -206,7 +206,9 @@ class EnvironmentSetup:
         for req in default_reqs:
             if "torch" not in req:
                 try:
-                    os.system(f"{self.pip} install {req}")
+                    # Split requirement string safely if needed or pass directly to pip
+                    cmd = [sys.executable, "-m", "pip", "install"] + req.split()
+                    subprocess.run(cmd, check=True)
                 except Exception as e:
                     print_warning(f"安装 {req} 失败: {e}")
         

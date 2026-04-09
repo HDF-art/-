@@ -9,6 +9,7 @@ import json
 import time
 import socket
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Optional
 
 class FederatedTask:
@@ -22,7 +23,7 @@ class FederatedTask:
         self.num_clients = num_clients
         self.num_rounds = num_rounds
         self.num_epochs = num_epochs
-        self.task_dir = f"/tmp/flgo_tasks/{task_id}"
+        self.task_dir = f"./flgo_tasks/{task_id}"
         self.runner = None
         self.status = "PENDING"  # PENDING, RUNNING, COMPLETED, FAILED
         self.results = {}
@@ -36,7 +37,8 @@ class FLGoService:
         self.tasks: Dict[str, FederatedTask] = {}
         self.participants: Dict[str, List[str]] = {}  # task_id -> [client_ips]
         self.server_ip: Optional[str] = None
-        os.makedirs("/tmp/flgo_tasks", exist_ok=True)
+        self.executor = ThreadPoolExecutor(max_workers=5)
+        os.makedirs("./flgo_tasks", exist_ok=True)
         
     def set_server_ip(self, ip: str):
         """设置服务器端IP"""
@@ -145,8 +147,7 @@ class FLGoService:
                 task.results = {'error': str(e)}
                 task.end_time = time.time()
                 
-        thread = threading.Thread(target=run)
-        thread.start()
+        self.executor.submit(run)
         return task
     
     def get_task_status(self, task_id: str) -> Dict:

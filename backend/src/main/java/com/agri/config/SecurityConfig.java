@@ -11,12 +11,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 @EnableAutoConfiguration(exclude = {UserDetailsServiceAutoConfiguration.class})
 public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -43,8 +48,9 @@ public class SecurityConfig {
                     "/upload/**",
                     "/error"
                 ).permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             .and()
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin().disable()
             .httpBasic().disable();
         
