@@ -3,17 +3,24 @@ package com.agri.utils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.util.*;
+import java.security.SecureRandom;
 
 @Component
 public class JwtUtils {
     
-    private static final String SECRET_KEY = "AgriPlatformSecretKey2026VeryLongSecureKey123456";
-    private static final long EXPIRATION = 24 * 60 * 60 * 1000L;
+    @Value("${jwt.secret}")
+    private String secretKey;
     
-    public static String generateToken(String username, Long userId, String role) {
-        String uniqueId = System.currentTimeMillis() + "-" + new Random().nextInt(1000000);
+    @Value("${jwt.expiration:86400000}")
+    private long expiration;
+    
+    private final SecureRandom secureRandom = new SecureRandom();
+    
+    public String generateToken(String username, Long userId, String role) {
+        String uniqueId = System.currentTimeMillis() + "-" + secureRandom.nextInt(1000000);
         
         return Jwts.builder()
                 .setSubject(username)
@@ -21,17 +28,17 @@ public class JwtUtils {
                 .claim("role", role)
                 .claim("uniqueId", uniqueId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
     
-    public static Map<String, Object> validateToken(String token) {
+    public Map<String, Object> validateToken(String token) {
         Map<String, Object> result = new HashMap<>();
         
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
             
@@ -51,10 +58,10 @@ public class JwtUtils {
         return result;
     }
     
-    public static String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
             return claims.getSubject();
@@ -63,10 +70,10 @@ public class JwtUtils {
         }
     }
     
-    public static Long getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
             return claims.get("userId", Long.class);
@@ -75,10 +82,10 @@ public class JwtUtils {
         }
     }
     
-    public static String getRoleFromToken(String token) {
+    public String getRoleFromToken(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
             return claims.get("role", String.class);
@@ -87,10 +94,10 @@ public class JwtUtils {
         }
     }
     
-    public static boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
             return claims.getExpiration().before(new Date());
