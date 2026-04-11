@@ -4,20 +4,14 @@
       <a href="/client.html" target="_blank">📱 APP下载</a>
     </div>
     
-    <!-- 动态背景 -->
-    <div class="dynamic-bg">
-      <div class="sky"></div>
-      <div class="data-flow"></div>
-      <div class="grid-lines"></div>
-      <div class="particles"></div>
-      <div class="field"></div>
-    </div>
+    <!-- 背景图片 -->
+    <div class="dynamic-bg"></div>
     
     <div class="login-form-wrapper">
       <div class="login-brand">
         <img src="../assets/设计农业大数据平台 logo.png" alt="农业大数据平台" class="platform-logo" />
         <h1>农业大数据联合建模平台</h1>
-        <p>智能农业，数据驱动</p>
+        <p>智慧农业，数据驱动</p>
       </div>
       <el-card class="login-form">
         <div class="login-tabs">
@@ -250,12 +244,12 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: linear-gradient(180deg, 
-    #0a1628 0%, 
-    #0d2137 30%, 
-    #1a3a5c 60%, 
-    #0d4a3a 100%);
+  background-image: url('/images/login-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
 
 /* 天空 */
 .sky {
@@ -474,6 +468,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.link-group {
+  display: flex;
+  gap: 16px;
 }
 
 .remember-checkbox {
