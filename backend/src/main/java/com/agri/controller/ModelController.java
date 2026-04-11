@@ -73,10 +73,9 @@ public class ModelController {
     @PostMapping("/upload")
     public boolean uploadModel(@RequestPart("file") MultipartFile file, 
                              @RequestPart("model") Model model) {
-        // 验证模型文件
-        String error = fileUploadValidator.validateModelFile(file);
-        if (error != null) {
-            throw new RuntimeException(error);
+        FileUploadValidator.ValidationResult validationResult = fileUploadValidator.validateModelFile(file);
+        if (!validationResult.isValid()) {
+            throw new RuntimeException(validationResult.getErrorMessage());
         }
         return modelService.uploadModel(file, model);
     }

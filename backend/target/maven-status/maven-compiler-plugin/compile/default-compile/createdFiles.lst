@@ -52,6 +52,7 @@ com/agri/service/ModelService.class
 com/agri/utils/FileUploadValidator.class
 com/agri/controller/TrainingLogController.class
 com/agri/mapper/RecognitionRecordMapper.class
+com/agri/utils/FileUploadValidator$ValidationResult.class
 com/agri/service/impl/DataTransactionServiceImpl.class
 com/agri/service/impl/SecureMessageServiceImpl.class
 com/agri/utils/EncryptionUtils.class

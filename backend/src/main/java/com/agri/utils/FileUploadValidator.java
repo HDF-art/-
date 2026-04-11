@@ -2,179 +2,234 @@ package com.agri.utils;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class FileUploadValidator {
     
-    // 允许的文件类型
-    private static final Set<String> ALLOWED_IMAGE_TYPES = new HashSet<>(Arrays.asList(
-        "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"
-    ));
+    private static final long MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+    private static final long MAX_DATA_SIZE = 50 * 1024 * 1024;
+    private static final long MAX_MODEL_SIZE = 1024 * 1024 * 1024;
     
-    private static final Set<String> ALLOWED_DATA_TYPES = new HashSet<>(Arrays.asList(
-        "text/csv", "application/csv", "text/plain", "application/json",
-        "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ));
+    private static final Map<String, String> ALLOWED_IMAGE_EXTENSIONS = Map.of(
+        "jpg", "image/jpeg",
+        "jpeg", "image/jpeg",
+        "png", "image/png",
+        "gif", "image/gif",
+        "webp", "image/webp"
+    );
     
-    private static final Set<String> ALLOWED_MODEL_TYPES = new HashSet<>(Arrays.asList(
-        "application/zip", "application/x-zip-compressed",
-        "application/octet-stream", "model/onnx", "model/tensorflow"
-    ));
+    private static final Map<String, String> ALLOWED_DATA_EXTENSIONS = Map.of(
+        "csv", "text/csv",
+        "json", "application/json",
+        "txt", "text/plain",
+        "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "xls", "application/vnd.ms-excel"
+    );
     
-    // 文件大小限制 (10MB)
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
+    private static final Map<String, String> ALLOWED_MODEL_EXTENSIONS = Map.of(
+        "pt", "application/octet-stream",
+        "pth", "application/octet-stream",
+        "onnx", "application/octet-stream",
+        "h5", "application/octet-stream",
+        "zip", "application/zip"
+    );
     
-    // 危险文件扩展名
-    private static final Set<String> DANGEROUS_EXTENSIONS = new HashSet<>(Arrays.asList(
-        "exe", "sh", "bat", "cmd", "ps1", "vbs", "js", "jsp", "asp", "php",
-        "phtml", "shtml", "asa", "cer", "htaccess", "htpasswd", "cgi", "pl"
-    ));
+    private static final Map<String, byte[]> FILE_SIGNATURES = Map.of(
+        "jpeg", new byte[]{(byte)0xFF, (byte)0xD8, (byte)0xFF},
+        "png", new byte[]{(byte)0x89, (byte)0x50, (byte)0x4E, (byte)0x47},
+        "gif", new byte[]{(byte)0x47, (byte)0x49, (byte)0x46, (byte)0x38},
+        "zip", new byte[]{(byte)0x50, (byte)0x4B, (byte)0x03, (byte)0x04}
+    );
     
-    /**
-     * 验证图片上传
-     */
-    public String validateImage(MultipartFile file) {
+    public ValidationResult validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return "文件不能为空";
+            return ValidationResult.failure("文件不能为空");
         }
         
-        if (file.getSize() > MAX_FILE_SIZE) {
-            return "文件大小不能超过10MB";
+        if (file.getSize() > MAX_IMAGE_SIZE) {
+            return ValidationResult.failure("文件大小不能超过10MB");
         }
         
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            return "只允许上传 JPG, PNG, GIF, BMP, WebP 格式的图片";
-        }
-        
-        // 检查文件扩展名
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null) {
-            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-            if (DANGEROUS_EXTENSIONS.contains(ext)) {
-                return "不允许上传此类文件";
-            }
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            return ValidationResult.failure("文件名无效");
         }
         
-        // 验证文件内容 (检查文件头)
-        if (!validateImageContent(file)) {
-            return "文件内容无效或可能存在安全问题";
+        String extension = getExtension(originalFilename);
+        if (!ALLOWED_IMAGE_EXTENSIONS.containsKey(extension)) {
+            return ValidationResult.failure("只允许上传 JPG, PNG, GIF, WebP 格式的图片");
         }
         
-        return null; // 验证通过
+        String detectedType = detectFileType(file);
+        if (detectedType == null || !ALLOWED_IMAGE_EXTENSIONS.containsValue(detectedType)) {
+            return ValidationResult.failure("文件内容验证失败，可能不是有效的图片文件");
+        }
+        
+        if (!verifyFileSignature(file, extension)) {
+            return ValidationResult.failure("文件签名验证失败，文件可能被篡改");
+        }
+        
+        return ValidationResult.success(extension);
     }
     
-    /**
-     * 验证数据文件上传
-     */
-    public String validateDataFile(MultipartFile file) {
+    public ValidationResult validateDataFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return "文件不能为空";
+            return ValidationResult.failure("文件不能为空");
         }
         
-        if (file.getSize() > MAX_FILE_SIZE * 5) { // 数据文件允许50MB
-            return "文件大小不能超过50MB";
+        if (file.getSize() > MAX_DATA_SIZE) {
+            return ValidationResult.failure("文件大小不能超过50MB");
         }
         
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_DATA_TYPES.contains(contentType.toLowerCase())) {
-            return "只允许上传 CSV, TXT, JSON, Excel 格式的数据文件";
-        }
-        
-        // 检查扩展名
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null) {
-            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-            if (DANGEROUS_EXTENSIONS.contains(ext)) {
-                return "不允许上传此类文件";
-            }
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            return ValidationResult.failure("文件名无效");
         }
         
-        return null;
+        String extension = getExtension(originalFilename);
+        if (!ALLOWED_DATA_EXTENSIONS.containsKey(extension)) {
+            return ValidationResult.failure("只允许上传 CSV, JSON, TXT, Excel 格式的数据文件");
+        }
+        
+        return ValidationResult.success(extension);
     }
     
-    /**
-     * 验证模型文件上传
-     */
-    public String validateModelFile(MultipartFile file) {
+    public ValidationResult validateModelFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return "文件不能为空";
+            return ValidationResult.failure("文件不能为空");
         }
         
-        if (file.getSize() > MAX_FILE_SIZE * 100) { // 模型文件允许1GB
-            return "文件大小不能超过1GB";
+        if (file.getSize() > MAX_MODEL_SIZE) {
+            return ValidationResult.failure("文件大小不能超过1GB");
         }
         
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_MODEL_TYPES.contains(contentType.toLowerCase())) {
-            return "只允许上传 ZIP, ONNX, TensorFlow 模型文件";
-        }
-        
-        // 检查扩展名
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null) {
-            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-            if (DANGEROUS_EXTENSIONS.contains(ext)) {
-                return "不允许上传此类文件";
-            }
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            return ValidationResult.failure("文件名无效");
         }
         
-        return null;
+        String extension = getExtension(originalFilename);
+        if (!ALLOWED_MODEL_EXTENSIONS.containsKey(extension)) {
+            return ValidationResult.failure("只允许上传 .pt, .pth, .onnx, .h5, .zip 格式的模型文件");
+        }
+        
+        return ValidationResult.success(extension);
     }
     
-    /**
-     * 验证图片内容 (检查文件头魔数)
-     */
-    private boolean validateImageContent(MultipartFile file) {
+    private String getExtension(String filename) {
+        if (filename == null) return "";
+        int lastDot = filename.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == filename.length() - 1) return "";
+        return filename.substring(lastDot + 1).toLowerCase();
+    }
+    
+    private String detectFileType(MultipartFile file) {
         try {
-            byte[] bytes = file.getBytes();
-            if (bytes.length < 4) return false;
+            byte[] header = new byte[8];
+            int bytesRead = file.getInputStream().read(header);
+            if (bytesRead < 4) return null;
             
-            // JPEG: FF D8 FF
-            if (bytes[0] == (byte)0xFF && bytes[1] == (byte)0xD8 && bytes[2] == (byte)0xFF) {
-                return true;
+            if (header[0] == (byte)0xFF && header[1] == (byte)0xD8 && header[2] == (byte)0xFF) {
+                return "image/jpeg";
             }
-            // PNG: 89 50 4E 47
-            if (bytes[0] == (byte)0x89 && bytes[1] == (byte)0x50 && bytes[2] == (byte)0x4E && bytes[3] == (byte)0x47) {
-                return true;
+            if (header[0] == (byte)0x89 && header[1] == (byte)0x50 && 
+                header[2] == (byte)0x4E && header[3] == (byte)0x47) {
+                return "image/png";
             }
-            // GIF: 47 49 46 38
-            if (bytes[0] == (byte)0x47 && bytes[1] == (byte)0x49 && bytes[2] == (byte)0x46 && bytes[3] == (byte)0x38) {
-                return true;
-            }
-            // BMP: 42 4D
-            if (bytes[0] == (byte)0x42 && bytes[1] == (byte)0x4D) {
-                return true;
+            if (header[0] == (byte)0x47 && header[1] == (byte)0x49 && 
+                header[2] == (byte)0x46 && header[3] == (byte)0x38) {
+                return "image/gif";
             }
             
-            return false;
-        } catch (Exception e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    
+    private boolean verifyFileSignature(MultipartFile file, String expectedExtension) {
+        try {
+            byte[] header = new byte[8];
+            int bytesRead = file.getInputStream().read(header);
+            if (bytesRead < 4) return false;
+            
+            byte[] expectedSignature = FILE_SIGNATURES.get(expectedExtension);
+            if (expectedSignature == null) return true;
+            
+            for (int i = 0; i < expectedSignature.length; i++) {
+                if (header[i] != expectedSignature[i]) {
+                    return false;
+                }
+            }
+            
+            return true;
+        } catch (IOException e) {
             return false;
         }
     }
     
-    /**
-     * 清理文件名 (防止路径遍历攻击)
-     */
     public String sanitizeFilename(String filename) {
         if (filename == null || filename.isEmpty()) {
-            return "unknown";
+            return "file_" + System.currentTimeMillis();
         }
         
-        // 移除路径分隔符
         filename = filename.replaceAll("[/\\\\]", "_");
-        
-        // 移除危险字符
         filename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+        filename = filename.replaceAll("_{2,}", "_");
         
-        // 限制长度
+        if (filename.startsWith(".")) {
+            filename = "file" + filename;
+        }
+        
         if (filename.length() > 200) {
-            filename = filename.substring(0, 200);
+            int lastDot = filename.lastIndexOf('.');
+            if (lastDot > 0) {
+                String name = filename.substring(0, lastDot);
+                String ext = filename.substring(lastDot);
+                name = name.substring(0, 200 - ext.length());
+                filename = name + ext;
+            } else {
+                filename = filename.substring(0, 200);
+            }
         }
         
         return filename;
+    }
+    
+    public String generateSafeFilename(String originalFilename) {
+        String extension = getExtension(originalFilename);
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        
+        if (extension.isEmpty()) {
+            return uuid;
+        }
+        
+        return uuid + "." + extension;
+    }
+    
+    public static class ValidationResult {
+        private final boolean valid;
+        private final String errorMessage;
+        private final String extension;
+        
+        private ValidationResult(boolean valid, String errorMessage, String extension) {
+            this.valid = valid;
+            this.errorMessage = errorMessage;
+            this.extension = extension;
+        }
+        
+        public static ValidationResult success(String extension) {
+            return new ValidationResult(true, null, extension);
+        }
+        
+        public static ValidationResult failure(String errorMessage) {
+            return new ValidationResult(false, errorMessage, null);
+        }
+        
+        public boolean isValid() { return valid; }
+        public String getErrorMessage() { return errorMessage; }
+        public String getExtension() { return extension; }
     }
 }

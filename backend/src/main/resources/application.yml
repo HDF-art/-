@@ -13,14 +13,14 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/agri_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:admin123}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   
   mail:
     host: smtp.yeah.net
     port: 465
-    username: ${MAIL_USERNAME:admpchina@yeah.net}
-    password: ${MAIL_PASSWORD:PHZt3NE4DtTTJSy8}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -29,18 +29,18 @@ spring:
             enable: true
 
   redis:
-    host: localhost
-    port: 6379
-    password: ${REDIS_PASSWORD:AgriSecure2026!}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD}
     database: 0
 
 jwt:
-  secret: AgriPlatformSecretKey2026VeryLongSecureKey
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 model:
   service:
-    url: http://localhost:5000/api/crop-disease
+    url: ${MODEL_SERVICE_URL:http://localhost:5000/api/crop-disease}
   save-path: ${MODEL_SAVE_PATH:./models}
 
 upload:
@@ -52,8 +52,7 @@ logging:
   level:
     com.agri: info
 
-# Z.ai API配置
 z-ai:
-  api-key: ${ZAI_API_KEY:84b0c10a19954030994339f9101197f5.T8hZJQvRlisAOpmE}
-  model: glm-5.1
-  url: https://open.bigmodel.cn/api/paas/v4/chat/completions
+  api-key: ${ZAI_API_KEY}
+  model: ${ZAI_MODEL:glm-5.1}
+  url: ${ZAI_URL:https://open.bigmodel.cn/api/paas/v4/chat/completions}

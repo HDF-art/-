@@ -32,11 +32,10 @@ public class DataManagementController {
         Map<String, Object> result = new HashMap<>();
         
         try {
-            // 验证文件
-            String error = fileUploadValidator.validateDataFile(file);
-            if (error != null) {
+            FileUploadValidator.ValidationResult validationResult = fileUploadValidator.validateDataFile(file);
+            if (!validationResult.isValid()) {
                 result.put("success", false);
-                result.put("message", error);
+                result.put("message", validationResult.getErrorMessage());
                 return result;
             }
             
