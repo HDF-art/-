@@ -3,7 +3,9 @@ com/agri/controller/TrainingTaskController.class
 com/agri/service/EmailService.class
 com/agri/federation/FederationService.class
 com/agri/model/Dataset.class
+com/agri/config/WebSocketConfig.class
 com/agri/service/TrainingLogService.class
+com/agri/mapper/LocalClientMapper.class
 com/agri/service/ContentSecurityService.class
 com/agri/service/impl/TrainingTaskServiceImpl.class
 com/agri/controller/DatasetController.class
@@ -12,10 +14,13 @@ com/agri/mapper/UserMapper.class
 com/agri/service/impl/RecognitionRecordServiceImpl$1.class
 com/agri/model/User.class
 com/agri/service/impl/NotificationServiceImpl.class
+com/agri/service/impl/LocalDatasetServiceImpl.class
 com/agri/service/impl/EmailCodeServiceImpl.class
 com/agri/controller/ZChatController.class
+com/agri/model/LocalDataset.class
 com/agri/federation/SecureAggregationService.class
 com/agri/federation/ModelEvaluationService.class
+com/agri/controller/LocalClientController.class
 com/agri/service/DataCirculationService.class
 com/agri/model/RecognitionRecord.class
 com/agri/service/impl/UserServiceImpl.class
@@ -23,6 +28,7 @@ com/agri/service/impl/ModelServiceImpl.class
 com/agri/utils/ResponseUtils$ApiResponse.class
 com/agri/dto/LoginResponseDTO.class
 com/agri/mapper/FarmMapper.class
+com/agri/service/impl/LocalClientServiceImpl.class
 com/agri/controller/TestController.class
 com/agri/federation/FederatedModelService.class
 com/agri/dto/SendCodeDTO.class
@@ -34,12 +40,14 @@ com/agri/utils/ResponseUtils.class
 com/agri/service/impl/TaskParticipationServiceImpl.class
 com/agri/controller/ModelController.class
 com/agri/dto/UserInfoDTO.class
+com/agri/model/LocalClient.class
 com/agri/service/AuditRequestService.class
 com/agri/controller/StatsController.class
 com/agri/mapper/ModelMapper.class
 com/agri/controller/SecureMessageController.class
 com/agri/model/TrainingTask.class
 com/agri/controller/AuditLogController.class
+com/agri/service/LocalDatasetService.class
 com/agri/service/ModelService.class
 com/agri/utils/FileUploadValidator.class
 com/agri/controller/TrainingLogController.class
@@ -56,6 +64,7 @@ com/agri/dto/LoginDTO.class
 com/agri/service/UserService.class
 com/agri/service/TaskParticipationService.class
 com/agri/AgriApplication.class
+com/agri/mapper/LocalDatasetMapper.class
 com/agri/mapper/TaskParticipationMapper.class
 com/agri/dto/SendNotificationDTO.class
 com/agri/controller/DataCirculationController.class
@@ -72,6 +81,7 @@ com/agri/service/TrainingTaskService.class
 com/agri/model/AuditRequest.class
 com/agri/controller/AuditRequestController.class
 com/agri/controller/DataTransactionController.class
+com/agri/service/LocalClientService.class
 com/agri/model/SecureMessage.class
 com/agri/controller/FLGoStatusController.class
 com/agri/service/CacheService.class

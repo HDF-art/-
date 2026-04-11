@@ -1,75 +1,121 @@
 <template>
-  <div class="reset-password-page">
-    <div class="reset-card">
-      <div class="reset-header">
-        <h1>🔐 找回密码</h1>
-        <p>请输入您的账号信息来重置密码</p>
+  <div class="login-container">
+    <div class="top-right-link">
+      <a href="/client.html" target="_blank">📱 APP下载</a>
+    </div>
+    
+    <div class="dynamic-bg"></div>
+    
+    <div class="login-form-wrapper">
+      <div class="login-brand">
+        <img src="../assets/设计农业大数据平台 logo.png" alt="农业大数据平台" class="platform-logo" />
+        <h1>农业大数据联合建模平台</h1>
+        <p>智慧农业，数据驱动</p>
       </div>
       
-      <el-steps :active="step" finish-status="success" align-center class="steps">
-        <el-step title="验证身份"></el-step>
-        <el-step title="重置密码"></el-step>
-        <el-step title="完成"></el-step>
-      </el-steps>
-      
-      <!-- 步骤1: 验证身份 -->
-      <el-form v-if="step === 0" :model="verifyForm" :rules="verifyRules" ref="verifyForm" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="verifyForm.username" placeholder="请输入用户名"></el-input>
-        </el-form-item>
+      <el-card class="login-form">
+        <div class="form-header">
+          <h2>🔐 找回密码</h2>
+          <p>请输入您的账号信息来重置密码</p>
+        </div>
         
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="verifyForm.phone" placeholder="请输入注册时的手机号">
-            <template slot="append">
-              <el-button @click="sendCode" :disabled="countdown > 0">
+        <el-steps :active="step" finish-status="success" align-center class="steps" simple>
+          <el-step title="验证身份"></el-step>
+          <el-step title="重置密码"></el-step>
+          <el-step title="完成"></el-step>
+        </el-steps>
+        
+        <el-form v-if="step === 0" :model="verifyForm" :rules="verifyRules" ref="verifyForm" label-position="left">
+          <el-form-item prop="username">
+            <el-input 
+              v-model="verifyForm.username" 
+              placeholder="用户名" 
+              prefix-icon="el-icon-user" 
+              autocomplete="off"
+              class="form-input"
+            ></el-input>
+          </el-form-item>
+          
+          <el-form-item prop="phone">
+            <el-input 
+              v-model="verifyForm.phone" 
+              placeholder="手机号" 
+              prefix-icon="el-icon-mobile-phone"
+              autocomplete="off"
+              class="form-input"
+            >
+              <el-button 
+                slot="append" 
+                @click="sendCode" 
+                :disabled="countdown > 0"
+                class="code-btn"
+              >
                 {{ countdown > 0 ? `${countdown}s` : '获取验证码' }}
               </el-button>
-            </template>
-          </el-input>
-        </el-form-item>
+            </el-input>
+          </el-form-item>
+          
+          <el-form-item prop="code">
+            <el-input 
+              v-model="verifyForm.code" 
+              placeholder="验证码" 
+              prefix-icon="el-icon-message" 
+              autocomplete="off"
+              maxlength="6"
+              class="form-input"
+            ></el-input>
+          </el-form-item>
+          
+          <el-form-item>
+            <el-button type="primary" class="login-btn" @click="verifyIdentity" :loading="loading">
+              验证身份
+            </el-button>
+          </el-form-item>
+        </el-form>
         
-        <el-form-item label="验证码" prop="code">
-          <el-input v-model="verifyForm.code" placeholder="请输入6位验证码" maxlength="6"></el-input>
-        </el-form-item>
+        <el-form v-if="step === 1" :model="resetForm" :rules="resetRules" ref="resetForm" label-position="left">
+          <el-form-item prop="newPassword">
+            <el-input 
+              v-model="resetForm.newPassword" 
+              type="password" 
+              placeholder="新密码" 
+              prefix-icon="el-icon-lock"
+              show-password
+              class="form-input"
+            ></el-input>
+          </el-form-item>
+          
+          <el-form-item prop="confirmPassword">
+            <el-input 
+              v-model="resetForm.confirmPassword" 
+              type="password" 
+              placeholder="确认新密码" 
+              prefix-icon="el-icon-lock"
+              show-password
+              class="form-input"
+            ></el-input>
+          </el-form-item>
+          
+          <el-form-item>
+            <el-button type="primary" class="login-btn" @click="resetPassword" :loading="loading">
+              重置密码
+            </el-button>
+          </el-form-item>
+        </el-form>
         
-        <el-form-item>
-          <el-button type="primary" @click="verifyIdentity" :loading="loading" style="width: 100%;">
-            验证身份
+        <div v-if="step === 2" class="success-section">
+          <div class="success-icon">✅</div>
+          <h2>密码重置成功！</h2>
+          <p>您的新密码已设置成功，请使用新密码登录。</p>
+          <el-button type="primary" class="login-btn" @click="goToLogin">
+            立即登录
           </el-button>
-        </el-form-item>
-      </el-form>
-      
-      <!-- 步骤2: 重置密码 -->
-      <el-form v-if="step === 1" :model="resetForm" :rules="resetRules" ref="resetForm" label-width="80px">
-        <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="resetForm.newPassword" type="password" placeholder="请输入新密码" show-password></el-input>
-        </el-form-item>
+        </div>
         
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input v-model="resetForm.confirmPassword" type="password" placeholder="请再次输入新密码" show-password></el-input>
-        </el-form-item>
-        
-        <el-form-item>
-          <el-button type="primary" @click="resetPassword" :loading="loading" style="width: 100%;">
-            重置密码
-          </el-button>
-        </el-form-item>
-      </el-form>
-      
-      <!-- 步骤3: 完成 -->
-      <div v-if="step === 2" class="success-section">
-        <div class="success-icon">✅</div>
-        <h2>密码重置成功！</h2>
-        <p>您的新密码已设置成功，请使用新密码登录。</p>
-        <el-button type="primary" @click="goToLogin" style="width: 100%; margin-top: 20px;">
-          立即登录
-        </el-button>
-      </div>
-      
-      <!-- 返回登录 -->
-      <div v-if="step < 2" class="back-login">
-        <router-link to="/login">← 返回登录</router-link>
-      </div>
+        <div v-if="step < 2" class="form-options" style="justify-content: center;">
+          <router-link to="/login" class="forgot-password">← 返回登录</router-link>
+        </div>
+      </el-card>
     </div>
   </div>
 </template>
@@ -78,7 +124,6 @@
 export default {
   name: 'ResetPassword',
   data() {
-    // 密码验证
     const validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
@@ -89,7 +134,6 @@ export default {
       }
     }
     
-    // 确认密码验证
     const validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
@@ -143,7 +187,11 @@ export default {
         return
       }
       
-      // 模拟发送验证码
+      if (!/^1[3-9]\d{9}$/.test(this.verifyForm.phone)) {
+        this.$message.warning('手机号格式不正确')
+        return
+      }
+      
       this.$message.success('验证码已发送')
       this.countdown = 60
       const timer = setInterval(() => {
@@ -156,7 +204,6 @@ export default {
     verifyIdentity() {
       this.$refs.verifyForm.validate(valid => {
         if (valid) {
-          // 模拟验证
           this.loading = true
           setTimeout(() => {
             this.loading = false
@@ -170,7 +217,6 @@ export default {
       this.$refs.resetForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // 模拟重置密码
           setTimeout(() => {
             this.loading = false
             this.step = 2
@@ -187,56 +233,138 @@ export default {
 </script>
 
 <style scoped>
-.reset-password-page {
+.login-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
-.reset-card {
-  background: white;
-  border-radius: 16px;
-  padding: 40px;
+.dynamic-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  z-index: 0;
+  background-image: url('/images/login-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.reset-header {
+.top-right-link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.top-right-link a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 200, 0.2);
+  border: 1px solid rgba(0, 255, 200, 0.4);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.top-right-link a:hover {
+  background: rgba(0, 255, 200, 0.3);
+  border-color: rgba(0, 255, 200, 0.6);
+}
+
+.login-form-wrapper {
+  width: 420px;
+  padding: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.login-brand {
   text-align: center;
   margin-bottom: 30px;
 }
 
-.reset-header h1 {
-  font-size: 28px;
-  color: #333;
-  margin-bottom: 10px;
+.platform-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
 }
 
-.reset-header p {
-  color: #666;
+.login-brand h1 {
+  color: white;
+  font-size: 28px;
+  margin: 0 0 10px 0;
+  text-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+}
+
+.login-brand p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.login-form {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-header h2 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.form-header p {
+  margin: 0;
+  color: #999;
   font-size: 14px;
 }
 
 .steps {
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
-.back-login {
-  text-align: center;
-  margin-top: 20px;
+.form-input {
+  font-size: 14px;
 }
 
-.back-login a {
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgot-password {
   color: #409eff;
   text-decoration: none;
+  font-size: 14px;
 }
 
-.back-login a:hover {
+.forgot-password:hover {
   text-decoration: underline;
+}
+
+.login-btn {
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 0;
+}
+
+.code-btn {
+  font-size: 14px;
 }
 
 .success-section {
@@ -256,23 +384,24 @@ export default {
 
 .success-section p {
   color: #666;
+  margin-bottom: 20px;
 }
 </style>
 
 <style>
-/* 移动端找回密码页优化 */
 @media (max-width: 768px) {
-  .reset-card {
-    padding: 20px;
+  .login-form-wrapper {
     width: 90%;
+    padding: 10px;
   }
   
-  .reset-header h1 {
+  .login-brand h1 {
     font-size: 22px;
   }
   
-  .steps {
-    font-size: 12px;
+  .platform-logo {
+    width: 60px;
+    height: 60px;
   }
   
   .el-steps--simple {

@@ -41,11 +41,9 @@
               accept=".jpg,.jpeg,.png"
             >
               <img 
-                v-if="userForm.avatar" 
-                :src="getAvatarUrl(userForm.avatar)" 
-                class="avatar"
-              >
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              :src="getAvatarUrl(userForm.avatar)" 
+              class="avatar"
+            >
             </el-upload>
             <div style="margin-left: 15px;">
               <div style="font-size: 12px; color: #999;">点击头像更换，支持jpg/png格式，大小不超过2MB</div>
@@ -167,11 +165,14 @@ export default {
     },
     
     getAvatarUrl(avatar) {
-      if (!avatar) return ''
-      if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-        return avatar
+      if (avatar) {
+        if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+          return avatar
+        }
+        return `${process.env.VUE_APP_API_URL || 'http://localhost:8100/api'}${avatar}`
       }
-      return `${process.env.VUE_APP_API_URL || 'http://localhost:8100/api'}${avatar}`
+      const seed = this.userForm.username || this.userForm.id || 'default'
+      return `https://api.dicebear.com/9.x/jdenticon/svg?seed=${encodeURIComponent(seed)}`
     },
     
     async customUpload(options) {

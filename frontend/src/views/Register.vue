@@ -1,56 +1,105 @@
 <template>
-  <div class="register-container">
-    <div class="register-form-wrapper">
-      <div class="register-brand">
+  <div class="login-container">
+    <div class="top-right-link">
+      <a href="/client.html" target="_blank">📱 APP下载</a>
+    </div>
+    
+    <div class="dynamic-bg"></div>
+    
+    <div class="login-form-wrapper">
+      <div class="login-brand">
         <img src="../assets/设计农业大数据平台 logo.png" alt="农业大数据平台" class="platform-logo" />
-        <h1>用户注册</h1>
-        <p>农业大数据联合建模平台</p>
+        <h1>农业大数据联合建模平台</h1>
+        <p>智慧农业，数据驱动</p>
       </div>
       
-      <el-card class="register-form">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="注册普通用户" name="user"></el-tab-pane>
-          <el-tab-pane label="注册二级管理员" name="admin2"></el-tab-pane>
-        </el-tabs>
+      <el-card class="login-form">
+        <div class="login-tabs">
+          <el-tabs v-model="activeTab">
+            <el-tab-pane label="注册普通用户" name="user"></el-tab-pane>
+            <el-tab-pane label="注册二级管理员" name="admin2"></el-tab-pane>
+          </el-tabs>
+        </div>
         
-        <el-form ref="registerForm" :model="form" :rules="rules" label-width="100px">
-          <el-form-item label="用户名" prop="username">
-            <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
+        <el-form ref="registerForm" :model="form" :rules="rules" label-position="left">
+          <el-form-item prop="username">
+            <el-input 
+              v-model="form.username" 
+              placeholder="用户名" 
+              prefix-icon="el-icon-user" 
+              autocomplete="off"
+              class="form-input"
+            ></el-input>
           </el-form-item>
           
-          <el-form-item label="邮箱" prop="email">
-            <div class="email-input-group">
-              <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
-              <el-button @click="sendCode" :disabled="codeBtnDisabled" class="code-btn">
+          <el-form-item prop="email">
+            <el-input 
+              v-model="form.email" 
+              placeholder="邮箱" 
+              prefix-icon="el-icon-message"
+              autocomplete="off"
+              class="form-input"
+            >
+              <el-button 
+                slot="append" 
+                @click="sendCode" 
+                :disabled="codeBtnDisabled"
+                class="code-btn"
+              >
                 {{ codeBtnText }}
               </el-button>
-            </div>
+            </el-input>
           </el-form-item>
           
-          <el-form-item label="邮箱验证码" prop="code">
-            <el-input v-model="form.code" placeholder="请输入6位验证码"></el-input>
+          <el-form-item prop="code">
+            <el-input 
+              v-model="form.code" 
+              placeholder="邮箱验证码" 
+              prefix-icon="el-icon-key" 
+              autocomplete="off"
+              maxlength="6"
+              class="form-input"
+            ></el-input>
           </el-form-item>
           
-          <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
+          <el-form-item prop="password">
+            <el-input 
+              v-model="form.password" 
+              type="password" 
+              placeholder="密码" 
+              prefix-icon="el-icon-lock"
+              show-password
+              class="form-input"
+            ></el-input>
           </el-form-item>
           
-          <el-form-item label="确认密码" prop="confirmPassword">
-            <el-input type="password" v-model="form.confirmPassword" placeholder="请再次输入密码"></el-input>
+          <el-form-item prop="confirmPassword">
+            <el-input 
+              v-model="form.confirmPassword" 
+              type="password" 
+              placeholder="确认密码" 
+              prefix-icon="el-icon-lock"
+              show-password
+              class="form-input"
+            ></el-input>
           </el-form-item>
           
-          <!-- 二级管理员需要输入单位 -->
-          <el-form-item v-if="activeTab === 'admin2'" label="单位" prop="organization">
-            <el-input v-model="form.organization" placeholder="请输入单位名称"></el-input>
+          <el-form-item v-if="activeTab === 'admin2'" prop="organization">
+            <el-input 
+              v-model="form.organization" 
+              placeholder="单位名称" 
+              prefix-icon="el-icon-office-building"
+              class="form-input"
+            ></el-input>
           </el-form-item>
           
           <el-form-item>
-            <el-button type="primary" @click="handleRegister" :loading="loading" class="register-btn">
-              注册
+            <el-button type="primary" class="login-btn" @click="handleRegister" :loading="loading">
+              {{ activeTab === 'user' ? '立即注册' : '提交申请' }}
             </el-button>
           </el-form-item>
           
-          <div class="login-link-container">
+          <div class="form-options" style="justify-content: center;">
             <span class="login-link">已有账号？<router-link to="/login">立即登录</router-link></span>
           </div>
         </el-form>
@@ -132,11 +181,11 @@ export default {
         this.$message.success('验证码已发送到邮箱')
         this.codeBtnDisabled = true
         this.countdown = 60
-        this.codeBtnText = `${this.countdown}秒后重发`
+        this.codeBtnText = `${this.countdown}s`
         
         const timer = setInterval(() => {
           this.countdown--
-          this.codeBtnText = `${this.countdown}秒后重发`
+          this.codeBtnText = `${this.countdown}s`
           if (this.countdown <= 0) {
             clearInterval(timer)
             this.codeBtnDisabled = false
@@ -189,20 +238,59 @@ export default {
 </script>
 
 <style scoped>
-.register-container {
+.login-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.dynamic-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-image: url('/images/login-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.top-right-link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.top-right-link a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 200, 0.2);
+  border: 1px solid rgba(0, 255, 200, 0.4);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.top-right-link a:hover {
+  background: rgba(0, 255, 200, 0.3);
+  border-color: rgba(0, 255, 200, 0.6);
+}
+
+.login-form-wrapper {
+  width: 420px;
   padding: 20px;
+  position: relative;
+  z-index: 10;
 }
 
-.register-form-wrapper {
-  width: 500px;
-}
-
-.register-brand {
+.login-brand {
   text-align: center;
   margin-bottom: 30px;
 }
@@ -212,74 +300,59 @@ export default {
   height: 80px;
   border-radius: 50%;
   margin-bottom: 15px;
+  box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
 }
 
-.register-brand h1 {
+.login-brand h1 {
   color: white;
   font-size: 28px;
   margin: 0 0 10px 0;
+  text-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
 }
 
-.register-brand p {
-  color: rgba(255,255,255,0.8);
+.login-brand p {
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
 
-.register-form {
+.login-form {
   border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
 }
 
-.register-btn {
-  width: 100%;
-  margin-bottom: 10px;
+.login-tabs {
+  margin-bottom: 20px;
 }
 
-.login-link {
-  color: #666;
-  font-size: 14px;
-}
-
-.login-link a {
-  color: #409eff;
-}
-
-.email-input-group {
-  display: flex;
-  gap: 10px;
-}
-
-.email-input-group .el-input {
-  flex: 1;
-}
-
-.code-btn {
-  flex-shrink: 0;
-  min-width: 120px;
-}
-
-.register-form /deep/ .el-tabs__header {
+.login-tabs /deep/ .el-tabs__header {
   margin: 0 0 15px 0;
 }
 
-.register-form /deep/ .el-tabs__nav-wrap::after {
+.login-tabs /deep/ .el-tabs__nav-wrap::after {
   height: 1px;
 }
 
-.register-form /deep/ .el-tabs__nav {
+.login-tabs /deep/ .el-tabs__nav {
   width: 100%;
   display: flex;
 }
 
-.register-form /deep/ .el-tabs__item {
+.login-tabs /deep/ .el-tabs__item {
   flex: 1;
   text-align: center;
   font-size: 16px;
   padding: 0 20px;
 }
 
-.login-link-container {
-  text-align: center;
-  margin-top: 10px;
+.form-input {
+  font-size: 14px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .login-link {
@@ -292,7 +365,35 @@ export default {
   text-decoration: none;
 }
 
-.register-btn {
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.login-btn {
   width: 100%;
+  font-size: 16px;
+  padding: 12px 0;
+}
+
+.code-btn {
+  font-size: 14px;
+}
+</style>
+
+<style>
+@media (max-width: 768px) {
+  .login-form-wrapper {
+    width: 90%;
+    padding: 10px;
+  }
+  
+  .login-brand h1 {
+    font-size: 22px;
+  }
+  
+  .platform-logo {
+    width: 60px;
+    height: 60px;
+  }
 }
 </style>

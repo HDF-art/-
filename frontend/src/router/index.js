@@ -135,6 +135,12 @@ const routes = [
         meta: { title: '数据导入导出' }
       },
       {
+        path: 'admin1/data',
+        name: 'LocalDataManage',
+        component: () => import('../views/Admin1/LocalDataManage.vue'),
+        meta: { title: '本地数据管理' }
+      },
+      {
         path: 'admin2/dataset-manage',
         name: 'DatasetManage',
         component: () => import('../views/Admin2/DatasetManage.vue'),

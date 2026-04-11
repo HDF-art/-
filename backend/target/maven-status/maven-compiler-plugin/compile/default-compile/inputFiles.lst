@@ -1,7 +1,9 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/AuditRequestMapper.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/LocalClient.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/FederatedTask.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/StatsController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/TrainingTaskService.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/LocalClientMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RecognitionRecordController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/LoginDTO.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/ModelMapper.java
@@ -11,6 +13,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/DataCirculationService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/DataTransaction.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/ContentSecurityService.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/LocalDatasetMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/TrainingTaskMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/TrainingLogMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/RedisConfig.java
@@ -22,9 +25,11 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/DataCirculationMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/UserServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/FLGoStatusController.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalClientServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/DataTransactionController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/EmailController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/ResetPasswordDTO.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/LocalDataset.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/DatasetController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/DifferentialPrivacyService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/TaskParticipationService.java
@@ -43,12 +48,15 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/TrainingTask.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/FederatedModelService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/TaskParticipationMapper.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/WebSocketConfig.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/TaskParticipation.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/RecognitionRecord.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/LocalClientController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/SendCodeDTO.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/FederationService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/TestController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/ModelService.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/CacheService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/AuditLogController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java
@@ -58,6 +66,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/AuditRequest.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/DataCirculationController.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/LocalClientService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/Model.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/SmsSenderServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/FarmService.java
@@ -80,6 +89,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/TaskParticipationServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/DatasetService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/utils/JwtUtils.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/LocalDatasetService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/RecognitionRecordMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/NotificationService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/ModelEvaluationService.java

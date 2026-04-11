@@ -137,6 +137,7 @@
                 <i class="el-icon-data-analysis menu-icon"></i>
                 <span>数据管理</span>
               </template>
+              <el-menu-item index="/home/admin1/data">本地数据管理</el-menu-item>
               <el-menu-item index="/home/admin1/data/data-collection">数据采集</el-menu-item>
               <el-menu-item index="/home/admin1/data/import-export">数据导入导出</el-menu-item>
             </el-submenu>
@@ -191,7 +192,7 @@
               <el-menu-item index="/home/user/image-identify">图像识别</el-menu-item>
               <el-menu-item index="/home/user/history-record">识别记录</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/home/user/join-farm" class="menu-item">
+            <el-menu-item index="/home/user/join-farm" class="menu-item" v-if="effectiveUser && (effectiveUser.role === 'user' || effectiveUser.role === 3)">
               <i class="el-icon-office-building menu-icon"></i>
               <span slot="title">加入农场</span>
             </el-menu-item>
@@ -247,8 +248,7 @@ export default {
       currentPath: '数据面板',
       currentPageName: '数据面板',
       currentTime: '',
-      notificationCount: 1,
-      userAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+      notificationCount: 1
     }
   },
   computed: {
@@ -256,6 +256,13 @@ export default {
     ...mapGetters(['isAuthenticated', 'isAdmin1', 'isAdmin2', 'isUser']),
     effectiveUser() {
       return this.user || { role: 2 }
+    },
+    userAvatar() {
+      if (this.effectiveUser && this.effectiveUser.avatar) {
+        return this.effectiveUser.avatar
+      }
+      const seed = this.effectiveUser?.username || this.effectiveUser?.id || 'default'
+      return `https://api.dicebear.com/9.x/jdenticon/svg?seed=${encodeURIComponent(seed)}`
     }
   },
   created() {
@@ -333,7 +340,9 @@ export default {
     handleMenuSelect(index) {
       try {
         this.$router.push(index);
-      } catch (error) {}
+      } catch (error) {
+        console.warn('Navigation error:', error);
+      }
     },
     refreshContent() {
       this.$router.go(0)
