@@ -504,6 +504,39 @@ export const getAuditLogs = (params) => {
   })
 }
 
+// 获取日志列表（新接口）
+export const getOperationLogs = (params) => {
+  return request({
+    url: '/logs/list',
+    method: 'get',
+    params
+  })
+}
+
+// 获取日志统计
+export const getLogStatistics = () => {
+  return request({
+    url: '/logs/statistics',
+    method: 'get'
+  })
+}
+
+// 获取操作类型列表
+export const getOperationTypes = () => {
+  return request({
+    url: '/logs/operation-types',
+    method: 'get'
+  })
+}
+
+// 获取模块列表
+export const getLogModules = () => {
+  return request({
+    url: '/logs/modules',
+    method: 'get'
+  })
+}
+
 // 更新当前用户信息
 export const updateCurrentUser = (data) => {
   return request({

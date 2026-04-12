@@ -159,9 +159,12 @@ export default {
           this.$store.dispatch('login', this.loginForm)
             .then(() => {
               this.$message.success('登录成功');
-              this.$router.push('/home/data-panel').catch(() => {});
+              setTimeout(() => {
+                window.location.href = '/home/data-panel';
+              }, 500);
             })
             .catch((error) => {
+              console.error('登录失败:', error);
               this.$message.error(error.message || '登录失败，请检查用户名或密码');
             })
             .finally(() => {

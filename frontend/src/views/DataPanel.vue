@@ -269,7 +269,7 @@ export default {
     
     initChinaMap() {
       const chart = echarts.init(document.getElementById('chinaMap'))
-      const mapUrl = 'https://cdn.jsdelivr.net/npm/@jiaminghi/china-map-geojson@1.0.0/china.json'
+      const mapUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
       
       fetch(mapUrl)
         .then(response => {

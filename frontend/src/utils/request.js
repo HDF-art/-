@@ -40,7 +40,10 @@ service.interceptors.response.use(
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         if (router.currentRoute.path !== '/login') {
-          router.push('/login')
+          router.push({
+            path: '/login',
+            query: { redirect: router.currentRoute.fullPath }
+          })
         }
       }
       
@@ -66,15 +69,19 @@ service.interceptors.response.use(
           localStorage.removeItem('token')
           localStorage.removeItem('user')
           if (router.currentRoute.path !== '/login') {
-            router.push('/login')
+            router.push({
+              path: '/login',
+              query: { redirect: router.currentRoute.fullPath }
+            })
           }
           break
         case 431:
           errorMessage = '请求头过大，请清除缓存后重试'
           console.warn('检测到431错误，彻底清除所有可能的数据')
           // 更彻底地清除所有可能的数据
-          localStorage.clear() // 清空所有localStorage数据
-          sessionStorage.clear() // 清空所有sessionStorage数据
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          sessionStorage.removeItem('token')
           // 强制刷新页面，确保所有缓存都被清除
           window.location.reload()
           break

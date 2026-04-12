@@ -1,0 +1,21 @@
+package com.agri.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OperationLog {
+    
+    String operationType() default "";
+    
+    String module() default "";
+    
+    String description() default "";
+    
+    boolean saveParams() default true;
+    
+    boolean saveResult() default false;
+}

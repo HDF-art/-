@@ -1,18 +1,18 @@
 package com.agri.controller;
 
-import com.agri.dto.LoginDTO;
-import com.agri.dto.LoginResponseDTO;
-import com.agri.dto.PhoneLoginDTO;
-import com.agri.dto.ResetPasswordDTO;
-import com.agri.dto.SendCodeDTO;
-import com.agri.dto.UserInfoDTO;
+import com.agri.annotation.OperationLog;
+import com.agri.constant.RoleEnum;
+import com.agri.dto.*;
 import com.agri.model.User;
+import com.agri.model.UserPrincipal;
 import com.agri.service.EmailCodeService;
 import com.agri.service.SmsService;
 import com.agri.service.UserService;
 import com.agri.utils.JwtUtils;
 import com.agri.utils.ResponseUtils;
 import com.agri.utils.FileUploadValidator;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +68,9 @@ public class UserController {
         logger.info("UserController的hello接口被调用");
         return "UserController的hello接口正常工作";
     }
-    
+
     @PostMapping("/login")
+    @OperationLog(operationType = "LOGIN", module = "USER", description = "用户登录")
     public ResponseUtils.ApiResponse<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         logger.info("登录接口被调用，用户名：{}", loginDTO.getUsername());
         try {
@@ -81,6 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/info")
+    @OperationLog(operationType = "VIEW", module = "USER", description = "获取用户信息")
     public ResponseUtils.ApiResponse<UserInfoDTO> getCurrentUserInfo(HttpServletRequest request) {
         try {
             Long userId = getAuthenticatedUserId(request);
@@ -103,7 +105,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN1') or hasRole('ADMIN2') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN1') or hasRole('ADMIN2') or #userId == authentication.principal.id")
     public ResponseUtils.ApiResponse<UserInfoDTO> getUserInfo(@PathVariable("id") Long userId) {
         try {
             UserInfoDTO result = userService.getUserInfo(userId);
@@ -169,7 +171,7 @@ public class UserController {
                 return ResponseUtils.error(404, "用户不存在");
             }
             
-            if (user.getRole() != null && user.getRole() == 1) {
+            if (user.getRole() != null && user.getRole() == RoleEnum.ADMIN1.getCode()) {
                 return ResponseUtils.error(403, "无法删除一级管理员账户");
             }
             
@@ -281,34 +283,21 @@ public class UserController {
                 return ResponseUtils.error(400, "图片大小不能超过2MB");
             }
             
-            String detectedType = detectImageType(file.getInputStream());
-            if (detectedType == null) {
-                logger.warn("【头像上传】无法识别的文件类型");
-                return ResponseUtils.error(400, "不支持的文件类型，只支持JPG/PNG/GIF格式");
+            // 校验文件安全性，防止 bypass 风险
+            FileUploadValidator.ValidationResult validation = fileUploadValidator.validateImage(file);
+            if (!validation.isValid()) {
+                logger.warn("【头像上传】文件校验失败: {}", validation.getErrorMessage());
+                return ResponseUtils.error(400, validation.getErrorMessage());
             }
             
-            String fileExtension;
-            switch (detectedType) {
-                case "jpeg":
-                    fileExtension = ".jpg";
-                    break;
-                case "png":
-                    fileExtension = ".png";
-                    break;
-                case "gif":
-                    fileExtension = ".gif";
-                    break;
-                default:
-                    return ResponseUtils.error(400, "不支持的文件类型");
-            }
+            String fileExtension = "." + validation.getExtension();
+            String newFileName = fileUploadValidator.generateSafeFilename(file.getOriginalFilename());
             
-            String newFileName = UUID.randomUUID().toString() + fileExtension;
-            
-            String uploadDir = "/home/ubuntu/农业大数据联合建模平台/upload/avatars";
-            File dir = new File(uploadDir);
+            // 使用配置文件的路径，避免绝对路径硬编码
+            File dir = new File(uploadDirBase, "avatars");
             if (!dir.exists()) {
                 dir.mkdirs();
-                logger.info("【头像上传】创建上传目录: {}", uploadDir);
+                logger.info("【头像上传】创建上传目录: {}", dir.getAbsolutePath());
             }
             
             File destFile = new File(dir, newFileName);
@@ -390,23 +379,12 @@ public class UserController {
                 return ResponseUtils.error(404, "用户不存在");
             }
             
-            int roleValue;
-            switch (newRole) {
-                case "admin1":
-                    roleValue = 1;
-                    break;
-                case "admin2":
-                    roleValue = 2;
-                    break;
-                default:
-                    roleValue = 3;
-            }
-            
-            user.setRole(roleValue);
+            RoleEnum targetRole = RoleEnum.fromValue(newRole);
+            user.setRole(targetRole.getCode());
             user.setUpdatedAt(java.time.LocalDateTime.now());
             userService.updateById(user);
             
-            logger.info("用户角色已更新: userId={}, newRole={}", userId, newRole);
+            logger.info("用户角色已更新: userId={}, newRole={}", userId, targetRole.getValue());
             return ResponseUtils.success("角色更新成功");
         } catch (Exception e) {
             logger.error("更新用户角色失败", e);
@@ -455,38 +433,34 @@ public class UserController {
 
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN1') or hasRole('ADMIN2')")
+    @OperationLog(operationType = "VIEW", module = "USER", description = "获取用户列表")
     public ResponseUtils.ApiResponse<Map<String, Object>> getUserList(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String role) {
         try {
-            List<User> allUsers = userService.list();
+            // 使用 MyBatis-Plus 分页插件，将逻辑下推到数据库层面，防止 OOM
+            Page<User> pageParam = new Page<>(page, size);
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             
-            List<User> filteredUsers = allUsers.stream()
-                .filter(u -> {
-                    if (u.getId() == 1 || "admin".equals(u.getUsername())) {
-                        return false;
-                    }
-                    boolean match = true;
-                    if (username != null && !username.isEmpty()) {
-                        match = u.getUsername() != null && u.getUsername().contains(username);
-                    }
-                    if (role != null && !role.isEmpty()) {
-                        int roleInt = "admin1".equals(role) ? 1 : ("admin2".equals(role) ? 2 : 3);
-                        match = match && u.getRole() != null && u.getRole() == roleInt;
-                    }
-                    return match;
-                })
-                .collect(java.util.stream.Collectors.toList());
+            // 排除系统账号和一级管理员 (根据业务需求)
+            queryWrapper.ne("id", 1).ne("username", "admin");
             
-            int total = filteredUsers.size();
-            int start = (page - 1) * size;
-            int end = Math.min(start + size, total);
+            if (username != null && !username.isEmpty()) {
+                queryWrapper.like("username", username);
+            }
+            if (role != null && !role.isEmpty()) {
+                RoleEnum roleEnum = RoleEnum.fromValue(role);
+                queryWrapper.eq("role", roleEnum.getCode());
+            }
+            
+            queryWrapper.orderByDesc("created_at");
+            
+            Page<User> userPage = userService.page(pageParam, queryWrapper);
             
             List<Map<String, Object>> userList = new java.util.ArrayList<>();
-            for (int i = start; i < end && i < filteredUsers.size(); i++) {
-                User u = filteredUsers.get(i);
+            for (User u : userPage.getRecords()) {
                 Map<String, Object> userMap = new java.util.HashMap<>();
                 userMap.put("id", u.getId());
                 userMap.put("username", u.getUsername());
@@ -494,7 +468,7 @@ public class UserController {
                 userMap.put("phone", u.getPhone());
                 userMap.put("organization", u.getOrganization());
                 userMap.put("role", u.getRole());
-                userMap.put("roleName", getRoleName(u.getRole()));
+                userMap.put("roleName", RoleEnum.fromCode(u.getRole()).getDescription());
                 userMap.put("status", u.getStatus());
                 userMap.put("createdAt", u.getCreatedAt());
                 userList.add(userMap);
@@ -502,7 +476,7 @@ public class UserController {
             
             Map<String, Object> result = new java.util.HashMap<>();
             result.put("list", userList);
-            result.put("total", total);
+            result.put("total", userPage.getTotal());
             result.put("page", page);
             result.put("size", size);
             
@@ -514,12 +488,87 @@ public class UserController {
     }
     
     private String getRoleName(Integer role) {
-        if (role == null) return "未知";
-        switch (role) {
-            case 1: return "一级管理员";
-            case 2: return "二级管理员";
-            case 3: return "普通用户";
-            default: return "未知";
+        return RoleEnum.fromCode(role).getDescription();
+    }
+    
+    @GetMapping("/pending-audit")
+    public ResponseUtils.ApiResponse<List<Map<String, Object>>> getPendingAuditUsers() {
+        try {
+            List<User> pendingUsers = userService.getPendingAuditUsers();
+            List<Map<String, Object>> result = new java.util.ArrayList<>();
+            
+            for (User u : pendingUsers) {
+                Map<String, Object> userMap = new java.util.HashMap<>();
+                userMap.put("id", u.getId());
+                userMap.put("username", u.getUsername());
+                userMap.put("email", u.getEmail());
+                userMap.put("organization", u.getOrganization());
+                userMap.put("auditStatus", u.getAuditStatus());
+                userMap.put("createdAt", u.getCreatedAt());
+                result.add(userMap);
+            }
+            
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            logger.error("获取待审核用户列表失败", e);
+            return ResponseUtils.error(500, "获取待审核用户列表失败");
+        }
+    }
+    
+    @GetMapping("/audit/processed")
+    @PreAuthorize("hasRole('ADMIN1')")
+    public ResponseUtils.ApiResponse<List<Map<String, Object>>> getProcessedAuditUsers() {
+        try {
+            List<User> processedUsers = userService.getProcessedAuditUsers();
+            List<Map<String, Object>> result = new java.util.ArrayList<>();
+            
+            for (User u : processedUsers) {
+                Map<String, Object> userMap = new java.util.HashMap<>();
+                userMap.put("id", u.getId());
+                userMap.put("username", u.getUsername());
+                userMap.put("email", u.getEmail());
+                userMap.put("organization", u.getOrganization());
+                userMap.put("auditStatus", u.getAuditStatus());
+                userMap.put("createdAt", u.getCreatedAt());
+                result.add(userMap);
+            }
+            
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            logger.error("获取已处理审核用户列表失败", e);
+            return ResponseUtils.error(500, "获取已处理审核用户列表失败");
+        }
+    }
+    
+    @PostMapping("/audit/{userId}")
+    @PreAuthorize("hasRole('ADMIN1')")
+    public ResponseUtils.ApiResponse<String> auditUser(
+            @PathVariable("userId") Long userId,
+            @RequestBody Map<String, Object> auditData) {
+        try {
+            Integer auditStatus = (Integer) auditData.get("auditStatus");
+            String rejectReason = (String) auditData.get("rejectReason");
+            
+            if (auditStatus == null || (auditStatus != 1 && auditStatus != 2)) {
+                return ResponseUtils.error(400, "无效的审核状态");
+            }
+            
+            boolean result = userService.auditAdmin2(userId, auditStatus);
+            
+            if (result) {
+                User user = userService.getById(userId);
+                if (auditStatus == 1) {
+                    logger.info("用户审核通过: userId={}, email={}", userId, user.getEmail());
+                } else {
+                    logger.info("用户审核拒绝: userId={}, email={}, reason={}", userId, user.getEmail(), rejectReason);
+                }
+                return ResponseUtils.success("审核成功");
+            } else {
+                return ResponseUtils.error(500, "审核失败");
+            }
+        } catch (Exception e) {
+            logger.error("审核用户失败", e);
+            return ResponseUtils.error(500, "审核失败");
         }
     }
 }

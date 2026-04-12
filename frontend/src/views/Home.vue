@@ -22,32 +22,75 @@
       </div>
       <div class="header-right">
         <div class="header-actions">
-          <el-dropdown trigger="click">
-            <el-button size="small" type="text" class="header-action-btn">
+          <el-dropdown trigger="click" @command="handleNotificationCommand">
+            <el-button size="small" class="notification-btn">
               <i class="el-icon-bell"></i>
-              <span class="notification-badge" v-if="notificationCount > 0">{{ notificationCount }}</span>
+              <span class="notification-badge" v-if="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
             </el-button>
-            <el-dropdown-menu slot="dropdown" class="notification-menu">
-              <el-dropdown-item>
-                <div class="notification-header">
-                  <span>通知中心</span>
-                  <el-button size="text" type="primary">全部标为已读</el-button>
+            <el-dropdown-menu slot="dropdown" class="notification-dropdown">
+              <div class="notification-dropdown-header">
+                <span class="dropdown-title">通知中心</span>
+                <el-button type="text" size="mini" @click.stop="handleMarkAllRead">全部标为已读</el-button>
+              </div>
+              <div class="notification-list-wrapper">
+                <div v-if="notifications.length === 0" class="notification-empty">
+                  <i class="el-icon-bell" style="font-size: 40px; color: #dcdfe6; margin-bottom: 12px;"></i>
+                  <p>暂无通知</p>
                 </div>
-              </el-dropdown-item>
-              <el-dropdown-item disabled v-if="notificationCount === 0">
-                <p class="notification-empty">暂无通知</p>
-              </el-dropdown-item>
-              <el-dropdown-item v-else>
-                <div class="notification-item">
-                  <div class="notification-icon success"><i class="el-icon-circle-check"></i></div>
-                  <div class="notification-content">
-                    <p class="notification-title">模型训练完成</p>
-                    <p class="notification-time">10分钟前</p>
+                <div v-else class="notification-scroll-list">
+                  <div
+                    v-for="item in notifications.slice(0, 5)"
+                    :key="item.id"
+                    class="notification-item"
+                    :class="{ 'unread': item.status === 0 }"
+                    @click.stop="showNotificationDetail(item)"
+                  >
+                    <div class="notification-icon-wrapper" :class="getNotificationType(item)">
+                      <i :class="getNotificationIcon(item)"></i>
+                    </div>
+                    <div class="notification-info">
+                      <p class="notification-title">{{ item.title }}</p>
+                      <p class="notification-desc">{{ item.content ? item.content.substring(0, 30) + (item.content.length > 30 ? '...' : '') : '' }}</p>
+                      <p class="notification-time">{{ formatNotificationTime(item.createdAt) }}</p>
+                    </div>
+                    <div class="unread-dot" v-if="item.status === 0"></div>
                   </div>
                 </div>
-              </el-dropdown-item>
+              </div>
+              <div class="notification-dropdown-footer" v-if="notifications.length > 0">
+                <el-button type="text" @click.stop="goToNotificationList">查看全部通知</el-button>
+              </div>
             </el-dropdown-menu>
           </el-dropdown>
+
+          <el-dialog
+            title="通知详情"
+            :visible.sync="notificationDialogVisible"
+            width="520px"
+            :close-on-click-modal="true"
+            custom-class="notification-detail-dialog"
+            append-to-body
+          >
+            <div v-if="currentNotification" class="notification-detail-content">
+              <div class="detail-header">
+                <div class="detail-icon-wrapper" :class="getNotificationType(currentNotification)">
+                  <i :class="getNotificationIcon(currentNotification)" style="font-size: 28px;"></i>
+                </div>
+                <div class="detail-title-section">
+                  <h3 class="detail-title">{{ currentNotification.title }}</h3>
+                  <span class="detail-time">{{ formatNotificationTime(currentNotification.createdAt) }}</span>
+                </div>
+              </div>
+              <el-divider></el-divider>
+              <div class="detail-body">
+                <p class="detail-content">{{ currentNotification.content }}</p>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="notificationDialogVisible = false">关闭</el-button>
+              <el-button type="primary" @click="goToNotificationList">查看详情</el-button>
+            </span>
+          </el-dialog>
           
           <el-dropdown trigger="click">
             <span class="user-info">
@@ -237,6 +280,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import { getUserNotifications, markNotificationAsRead } from '../api/user'
 
 export default {
   name: 'Home',
@@ -248,7 +292,10 @@ export default {
       currentPath: '数据面板',
       currentPageName: '数据面板',
       currentTime: '',
-      notificationCount: 1
+      notifications: [],
+      unreadCount: 0,
+      notificationDialogVisible: false,
+      currentNotification: null
     }
   },
   computed: {
@@ -298,6 +345,7 @@ export default {
     this.timer = setInterval(() => {
       this.updateCurrentTime()
     }, 1000)
+    this.loadNotifications()
   },
   beforeDestroy() {
     if (this.timer) {
@@ -306,6 +354,96 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
+    async loadNotifications() {
+      try {
+        const userStr = localStorage.getItem('user')
+        let userId = 1
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr)
+            userId = user.id || 1
+          } catch (e) {
+            console.error('解析用户信息失败:', e)
+          }
+        }
+
+        const response = await getUserNotifications(userId, null)
+        if (response.data && response.data.code === 200) {
+          this.notifications = response.data.data || []
+          this.unreadCount = this.notifications.filter(n => n.status === 0).length
+        }
+      } catch (error) {
+        console.error('获取通知列表失败:', error)
+      }
+    },
+    showNotificationDetail(notification) {
+      this.currentNotification = notification
+      this.notificationDialogVisible = true
+
+      if (notification.status === 0) {
+        markNotificationAsRead(notification.id).then(() => {
+          notification.status = 1
+          this.unreadCount = Math.max(0, this.unreadCount - 1)
+        }).catch(error => {
+          console.error('标记已读失败:', error)
+        })
+      }
+    },
+    handleMarkAllRead() {
+      this.$confirm('确定要将所有通知标记为已读吗？', '确认操作', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const unreadNotifications = this.notifications.filter(n => n.status === 0)
+        const markPromises = unreadNotifications.map(n =>
+          markNotificationAsRead(n.id).catch(err => console.error('标记已读失败:', err))
+        )
+
+        Promise.all(markPromises).then(() => {
+          this.notifications.forEach(n => n.status = 1)
+          this.unreadCount = 0
+          this.$message.success('所有通知已标记为已读')
+        })
+      }).catch(() => {})
+    },
+    goToNotificationList() {
+      this.notificationDialogVisible = false
+      this.$router.push('/home/user/notification-list')
+    },
+    formatNotificationTime(time) {
+      if (!time) return ''
+      const date = new Date(time)
+      const now = new Date()
+      const diff = now - date
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(diff / 3600000)
+      const days = Math.floor(diff / 86400000)
+
+      if (minutes < 1) return '刚刚'
+      if (minutes < 60) return `${minutes}分钟前`
+      if (hours < 24) return `${hours}小时前`
+      if (days < 7) return `${days}天前`
+      return date.toLocaleDateString('zh-CN')
+    },
+    getNotificationType(notification) {
+      const title = (notification.title || '').toLowerCase()
+      if (title.includes('完成') || title.includes('成功')) return 'success'
+      if (title.includes('警告') || title.includes('失败')) return 'warning'
+      if (title.includes('错误')) return 'danger'
+      return 'info'
+    },
+    getNotificationIcon(notification) {
+      const type = this.getNotificationType(notification)
+      const iconMap = {
+        success: 'el-icon-circle-check',
+        warning: 'el-icon-warning',
+        danger: 'el-icon-circle-close',
+        info: 'el-icon-info'
+      }
+      return iconMap[type] || 'el-icon-bell'
+    },
+    handleNotificationCommand() {},
     updatePageName(path) {
       const pageNames = {
         "/home/data-panel": "数据面板",
@@ -585,5 +723,307 @@ export default {
 
 .global-footer p {
   margin: 4px 0;
+}
+</style>
+
+<style>
+.notification-btn {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 83, 155, 0.08);
+  color: #00539B;
+  font-size: 18px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+}
+
+.notification-btn:hover {
+  background: rgba(0, 83, 155, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 83, 155, 0.2);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  background: #ff4757;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 9px;
+  padding: 0 5px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.notification-dropdown {
+  width: 380px !important;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden;
+}
+
+.notification-dropdown .el-dropdown-menu__item {
+  padding: 0 !important;
+  line-height: normal !important;
+  height: auto !important;
+}
+
+.notification-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.dropdown-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.notification-list-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-scroll-list {
+  padding: 8px 0;
+}
+
+.notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #909399;
+  font-size: 14px;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.notification-item:hover {
+  background-color: rgba(0, 83, 155, 0.04);
+  border-left-color: #00539B;
+  transform: translateX(4px);
+}
+
+.notification-item.unread {
+  background-color: rgba(0, 83, 155, 0.02);
+}
+
+.notification-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.notification-icon-wrapper.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #28a745;
+}
+
+.notification-icon-wrapper.warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #ff9800;
+}
+
+.notification-icon-wrapper.danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #dc3545;
+}
+
+.notification-icon-wrapper.info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #17a2b8;
+}
+
+.notification-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-info .notification-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.notification-info .notification-desc {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notification-info .notification-time {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.unread-dot {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #00539B;
+  border-radius: 50%;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.notification-dropdown-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+  background: #fafbfc;
+}
+
+.notification-detail-dialog {
+  border-radius: 20px !important;
+  overflow: hidden;
+}
+
+.notification-detail-dialog .el-dialog__header {
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.notification-detail-dialog .el-dialog__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.notification-detail-dialog .el-dialog__body {
+  padding: 28px;
+}
+
+.notification-detail-dialog .el-dialog__footer {
+  padding: 16px 28px 24px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafbfc;
+}
+
+.notification-detail-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.detail-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.detail-icon-wrapper.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #28a745;
+}
+
+.detail-icon-wrapper.warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #ff9800;
+}
+
+.detail-icon-wrapper.danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #dc3545;
+}
+
+.detail-icon-wrapper.info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #17a2b8;
+}
+
+.detail-title-section {
+  flex: 1;
+}
+
+.detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+}
+
+.detail-time {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.detail-body {
+  padding: 8px 0;
+}
+
+.detail-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #334155;
+  margin: 0;
 }
 </style>

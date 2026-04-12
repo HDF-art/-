@@ -1,5 +1,7 @@
 package com.agri.service;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
@@ -98,17 +100,14 @@ public class ContentSecurityService {
             return result;
         }
         
-        // 检查SQL注入特征
-        if (containsSQLInjection(content)) {
+        // 检查XSS特征 - 使用 Jsoup 进行清理
+        String cleanContent = Jsoup.clean(content, Safelist.basic());
+        if (!cleanContent.equals(content)) {
+            // 如果清理前后的内容不一致，说明包含潜在的恶意脚本或标签
+            // 在某些场景下你可能想直接报错，或者返回清理后的内容
+            // 这里我们按照用户要求加强防御，发现差异即判定为不安全
             result.put("safe", false);
-            result.put("message", "内容包含非法SQL语句");
-            return result;
-        }
-        
-        // 检查XSS特征
-        if (containsXSS(content)) {
-            result.put("safe", false);
-            result.put("message", "内容包含潜在恶意脚本");
+            result.put("message", "内容包含潜在恶意脚本或不安全的HTML标签");
             return result;
         }
         
@@ -142,7 +141,7 @@ public class ContentSecurityService {
     }
 
     private boolean containsDangerousChars(String filename) {
-        String dangerous = "<>:\"|?*\\/\0";
+        String dangerous = "<>:\"|?*\\/\u0000";
         for (char c : filename.toCharArray()) {
             if (dangerous.indexOf(c) >= 0) {
                 return true;
@@ -151,26 +150,9 @@ public class ContentSecurityService {
         return false;
     }
 
-    private boolean containsSQLInjection(String content) {
-        String lower = content.toLowerCase();
-        String[] sqlKeywords = {"select ", "insert ", "update ", "delete ", "drop ", "union ", "create ", "alter ", "exec ", "execute "};
-        for (String keyword : sqlKeywords) {
-            if (lower.contains(keyword)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean containsXSS(String content) {
-        String lower = content.toLowerCase();
-        String[] xssPatterns = {"<script", "javascript:", "onerror=", "onload=", "eval(", "expression("};
-        for (String pattern : xssPatterns) {
-            if (lower.contains(pattern)) {
-                return true;
-            }
-        }
-        return false;
+        String clean = Jsoup.clean(content, Safelist.none());
+        return !clean.equals(content);
     }
 
     private String bytesToHex(byte[] bytes) {

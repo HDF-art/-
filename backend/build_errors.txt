@@ -1,0 +1,656 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective model for com.agri:agri-platform:jar:0.0.1-SNAPSHOT
+[[1;33mWARNING[m] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: javax.xml.bind:jaxb-api:jar -> duplicate declaration of version 2.3.1 @ line 133, column 21
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] It is highly recommended to fix these problems because they threaten the stability of your build.
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] For this reason, future Maven versions might no longer support building such malformed projects.
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------------------< [0;36mcom.agri:agri-platform[0;1m >-----------------------[m
+[[1;34mINFO[m] [1mBuilding agri-platform 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:3.2.0:clean[m [1m(default-clean)[m @ [36magri-platform[0;1m ---[m
+[[1;34mINFO[m] Deleting /home/ubuntu/农业大数据联合建模平台/backend/target
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.2.0:resources[m [1m(default-resources)[m @ [36magri-platform[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered properties files.
+[[1;34mINFO[m] Copying 2 resources
+[[1;34mINFO[m] Copying 7 resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m @ [36magri-platform[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module! :source
+[[1;34mINFO[m] Compiling 121 source files with javac [forked debug target 17] to target/classes
+[[1;33mWARNING[m] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] COMPILATION ERROR : 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/SecurityConfig.java:[24,12] error: cannot access JwtAuthenticationFilter
+  bad source file: /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java
+    file does not contain class com.agri.config.JwtAuthenticationFilter
+    Please remove or make sure it appears in the correct subdirectory of the sourcepath.
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java:[26,7] error: duplicate class: JwtAuthenticationFilter
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java:[29,12] error: cannot find symbol
+  symbol:   class JwtUtils
+  location: class JwtAuthenticationFilter
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[69,74] error: cannot find symbol
+  symbol:   class LoginDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[69,37] error: cannot find symbol
+  symbol:   class LoginResponseDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[80,37] error: cannot find symbol
+  symbol:   class UserInfoDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[103,37] error: cannot find symbol
+  symbol:   class UserInfoDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[330,67] error: cannot find symbol
+  symbol:   class SendCodeDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[341,79] error: cannot find symbol
+  symbol:   class PhoneLoginDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[341,37] error: cannot find symbol
+  symbol:   class LoginResponseDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[352,72] error: cannot find symbol
+  symbol:   class ResetPasswordDTO
+  location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[18,20] error: invalid method reference
+  cannot find symbol
+    symbol:   method getClientId()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[19,29] error: invalid method reference
+  cannot find symbol
+    symbol:   method getModifiedAt()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[25,54] error: cannot find symbol
+  symbol:   method getClientId()
+  location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[25,20] error: invalid method reference
+  cannot find symbol
+    symbol:   method getClientId()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[26,20] error: invalid method reference
+  cannot find symbol
+    symbol:   method getPath()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[26,50] error: cannot find symbol
+  symbol:   method getPath()
+  location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[29,34] error: cannot find symbol
+  symbol:   method getId()
+  location: variable existing of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[32,15] error: cannot find symbol
+  symbol:   method setSyncedAt(LocalDateTime)
+  location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[39,20] error: invalid method reference
+  cannot find symbol
+    symbol:   method getClientId()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[40,20] error: invalid method reference
+  cannot find symbol
+    symbol:   method getPath()
+    location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[33,20] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[34,20] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[45,20] error: cannot find symbol
+  symbol:   method setStatus(Integer)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[46,20] error: cannot find symbol
+  symbol:   method setAuditorId(Long)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[47,20] error: cannot find symbol
+  symbol:   method setAuditComment(String)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[48,20] error: cannot find symbol
+  symbol:   method setAuditedAt(LocalDateTime)
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[62,32] error: cannot find symbol
+  symbol:   method getType()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[79,73] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[80,34] error: cannot find symbol
+  symbol:   method getApplicantId()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[84,20] error: cannot find symbol
+  symbol:   method setName(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[87,20] error: cannot find symbol
+  symbol:   method setEmail(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[90,20] error: cannot find symbol
+  symbol:   method setPhone(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[92,16] error: cannot find symbol
+  symbol:   method setUpdatedAt(LocalDateTime)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[98,34] error: cannot find symbol
+  symbol:   method getApplicantId()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[103,34] error: cannot find symbol
+  symbol:   method getApplicantId()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[104,34] error: cannot find symbol
+  symbol:   method getFarmId()
+  location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[107,16] error: cannot find symbol
+  symbol:   method setFarmId(Long)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[108,16] error: cannot find symbol
+  symbol:   method setUpdatedAt(LocalDateTime)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[38,32] error: cannot find symbol
+  symbol:   method getAuditStatus()
+  location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[38,73] error: cannot find symbol
+  symbol:   method getAuditStatus()
+  location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[85,16] error: cannot find symbol
+  symbol:   method setUsername(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[86,16] error: cannot find symbol
+  symbol:   method setPassword(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[87,16] error: cannot find symbol
+  symbol:   method setEmail(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[88,16] error: cannot find symbol
+  symbol:   method setRole(int)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[89,16] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[96,52] error: cannot find symbol
+  symbol:   method getId()
+  location: variable createdUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[123,32] error: cannot find symbol
+  symbol:   method getAuditStatus()
+  location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[123,73] error: cannot find symbol
+  symbol:   method getAuditStatus()
+  location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[136,16] error: cannot find symbol
+  symbol:   method setUsername(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[137,16] error: cannot find symbol
+  symbol:   method setPassword(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[138,16] error: cannot find symbol
+  symbol:   method setEmail(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[139,16] error: cannot find symbol
+  symbol:   method setName(String)
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[64,37] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[65,39] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[66,40] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,94] error: cannot find symbol
+  symbol:   method getReceiverType()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,117] error: cannot find symbol
+  symbol:   method getFarmId()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,134] error: cannot find symbol
+  symbol:   method getSpecificUserIds()
+  location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[29,20] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[30,20] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[37,24] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[38,24] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[49,20] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[50,20] error: cannot find symbol
+  symbol:   method setReadAt(LocalDateTime)
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[100,43] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[101,45] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[102,46] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[103,40] error: cannot find symbol
+  symbol:   method getId()
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[104,21] error: cannot find symbol
+  symbol:   method setReceiverType(Integer)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[105,21] error: cannot find symbol
+  symbol:   method setFarmId(Long)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[106,21] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[107,21] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[115,43] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[116,45] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[117,46] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[118,40] error: cannot find symbol
+  symbol:   method getId()
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[119,21] error: cannot find symbol
+  symbol:   method setReceiverType(Integer)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[120,21] error: cannot find symbol
+  symbol:   method setFarmId(Long)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[121,21] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[122,21] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[130,43] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[131,45] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[132,46] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[133,40] error: cannot find symbol
+  symbol:   method getId()
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[134,21] error: cannot find symbol
+  symbol:   method setReceiverType(Integer)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[135,21] error: cannot find symbol
+  symbol:   method setFarmId(Long)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[136,21] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[137,21] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[154,43] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[155,45] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[156,46] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[157,40] error: cannot find symbol
+  symbol:   method getId()
+  location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[158,21] error: cannot find symbol
+  symbol:   method setReceiverType(Integer)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[159,21] error: cannot find symbol
+  symbol:   method setFarmId(Long)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[160,21] error: cannot find symbol
+  symbol:   method setStatus(int)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[161,21] error: cannot find symbol
+  symbol:   method setCreatedAt(LocalDateTime)
+  location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[169,47] error: cannot find symbol
+  symbol:   method getTitle()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[170,49] error: cannot find symbol
+  symbol:   method getContent()
+  location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[171,50] error: cannot find symbol
+  symbol:   method getSenderId()
+  location: variable notification of type Notification
+[[1;34mINFO[m] 100 errors 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  5.910 s
+[[1;34mINFO[m] Finished at: 2026-04-11T21:37:02+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m on project [36magri-platform[m: [1;31mCompilation failure[m: Compilation failure: 
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/SecurityConfig.java:[24,12] error: cannot access JwtAuthenticationFilter
+[[1;31mERROR[m]   bad source file: /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java
+[[1;31mERROR[m]     file does not contain class com.agri.config.JwtAuthenticationFilter
+[[1;31mERROR[m]     Please remove or make sure it appears in the correct subdirectory of the sourcepath.
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java:[26,7] error: duplicate class: JwtAuthenticationFilter
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/JwtAuthenticationFilter.java:[29,12] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class JwtUtils
+[[1;31mERROR[m]   location: class JwtAuthenticationFilter
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[69,74] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class LoginDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[69,37] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class LoginResponseDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[80,37] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class UserInfoDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[103,37] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class UserInfoDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[330,67] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class SendCodeDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[341,79] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class PhoneLoginDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[341,37] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class LoginResponseDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/UserController.java:[352,72] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   class ResetPasswordDTO
+[[1;31mERROR[m]   location: class UserController
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[18,20] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getClientId()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[19,29] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getModifiedAt()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[25,54] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getClientId()
+[[1;31mERROR[m]   location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[25,20] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getClientId()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[26,20] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getPath()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[26,50] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getPath()
+[[1;31mERROR[m]   location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[29,34] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable existing of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[32,15] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setSyncedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable dataset of type LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[39,20] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getClientId()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalDatasetServiceImpl.java:[40,20] error: invalid method reference
+[[1;31mERROR[m]   cannot find symbol
+[[1;31mERROR[m]     symbol:   method getPath()
+[[1;31mERROR[m]     location: class LocalDataset
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[33,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[34,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[45,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(Integer)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[46,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setAuditorId(Long)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[47,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setAuditComment(String)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[48,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setAuditedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[62,32] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getType()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[79,73] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[80,34] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getApplicantId()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[84,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setName(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[87,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setEmail(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[90,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPhone(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[92,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[98,34] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getApplicantId()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[103,34] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getApplicantId()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[104,34] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getFarmId()
+[[1;31mERROR[m]   location: variable auditRequest of type AuditRequest
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[107,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setFarmId(Long)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java:[108,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[38,32] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getAuditStatus()
+[[1;31mERROR[m]   location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[38,73] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getAuditStatus()
+[[1;31mERROR[m]   location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[85,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUsername(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[86,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPassword(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[87,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setEmail(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[88,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setRole(int)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[89,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[96,52] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable createdUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[123,32] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getAuditStatus()
+[[1;31mERROR[m]   location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[123,73] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getAuditStatus()
+[[1;31mERROR[m]   location: variable existingUser of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[136,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUsername(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[137,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPassword(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[138,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setEmail(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java:[139,16] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setName(String)
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[64,37] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[65,39] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[66,40] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,94] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getReceiverType()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,117] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getFarmId()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/NotificationController.java:[68,134] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSpecificUserIds()
+[[1;31mERROR[m]   location: variable dto of type SendNotificationDTO
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[29,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[30,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[37,24] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[38,24] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[49,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[50,20] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setReadAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[100,43] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[101,45] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[102,46] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[103,40] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[104,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setReceiverType(Integer)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[105,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setFarmId(Long)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[106,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[107,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[115,43] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[116,45] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[117,46] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[118,40] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[119,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setReceiverType(Integer)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[120,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setFarmId(Long)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[121,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[122,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[130,43] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[131,45] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[132,46] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[133,40] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[134,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setReceiverType(Integer)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[135,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setFarmId(Long)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[136,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[137,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[154,43] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[155,45] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[156,46] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[157,40] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getId()
+[[1;31mERROR[m]   location: variable user of type User
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[158,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setReceiverType(Integer)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[159,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setFarmId(Long)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[160,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(int)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[161,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setCreatedAt(LocalDateTime)
+[[1;31mERROR[m]   location: variable n of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[169,47] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getTitle()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[170,49] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getContent()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java:[171,50] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getSenderId()
+[[1;31mERROR[m]   location: variable notification of type Notification
+[[1;31mERROR[m] -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

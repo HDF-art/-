@@ -243,4 +243,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         
         return updateById(user);
     }
+    
+    @Override
+    public java.util.List<User> getPendingAuditUsers() {
+        return userMapper.selectList(
+            new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<User>()
+                .eq("role", 2)
+                .eq("audit_status", 0)
+                .orderByDesc("created_at")
+        );
+    }
+    
+    @Override
+    public java.util.List<User> getProcessedAuditUsers() {
+        return userMapper.selectList(
+            new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<User>()
+                .eq("role", 2)
+                .in("audit_status", 1, 2)
+                .orderByDesc("created_at")
+        );
+    }
 }

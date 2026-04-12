@@ -5,6 +5,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -35,7 +36,7 @@ public class EncryptionUtils {
         GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
         cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
         
-        byte[] cipherText = cipher.doFinal(message.getBytes());
+        byte[] cipherText = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
         
         byte[] cipherTextWithIv = new byte[GCM_IV_LENGTH + cipherText.length];
         System.arraycopy(iv, 0, cipherTextWithIv, 0, GCM_IV_LENGTH);
@@ -56,7 +57,7 @@ public class EncryptionUtils {
         cipher.init(Cipher.DECRYPT_MODE, key, parameterSpec);
         
         byte[] decryptedBytes = cipher.doFinal(cipherTextWithIv, GCM_IV_LENGTH, cipherTextWithIv.length - GCM_IV_LENGTH);
-        return new String(decryptedBytes);
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 
     public static String keyToString(SecretKey key) {

@@ -1,5 +1,6 @@
 com/agri/mapper/NotificationMapper.class
 com/agri/controller/TrainingTaskController.class
+com/agri/service/impl/OperationLogServiceImpl.class
 com/agri/service/EmailService.class
 com/agri/federation/FederationService.class
 com/agri/model/Dataset.class
@@ -8,7 +9,11 @@ com/agri/service/TrainingLogService.class
 com/agri/mapper/LocalClientMapper.class
 com/agri/service/ContentSecurityService.class
 com/agri/service/impl/TrainingTaskServiceImpl.class
+com/agri/model/OperationLog.class
+com/agri/annotation/OperationLog.class
+com/agri/model/UserPrincipal.class
 com/agri/controller/DatasetController.class
+com/agri/dto/OperationLogQueryDTO.class
 com/agri/controller/DataManagementController.class
 com/agri/mapper/UserMapper.class
 com/agri/service/impl/RecognitionRecordServiceImpl$1.class
@@ -34,6 +39,7 @@ com/agri/federation/FederatedModelService.class
 com/agri/dto/SendCodeDTO.class
 com/agri/dto/PhoneLoginDTO.class
 com/agri/service/impl/DatasetServiceImpl.class
+com/agri/aspect/OperationLogAspect.class
 com/agri/mapper/AuditRequestMapper.class
 com/agri/mapper/TrainingLogMapper.class
 com/agri/utils/ResponseUtils.class
@@ -46,6 +52,7 @@ com/agri/controller/StatsController.class
 com/agri/mapper/ModelMapper.class
 com/agri/controller/SecureMessageController.class
 com/agri/model/TrainingTask.class
+com/agri/service/OperationLogService.class
 com/agri/controller/AuditLogController.class
 com/agri/service/LocalDatasetService.class
 com/agri/service/ModelService.class
@@ -55,6 +62,7 @@ com/agri/mapper/RecognitionRecordMapper.class
 com/agri/utils/FileUploadValidator$ValidationResult.class
 com/agri/service/impl/DataTransactionServiceImpl.class
 com/agri/service/impl/SecureMessageServiceImpl.class
+com/agri/controller/AIProxyController.class
 com/agri/utils/EncryptionUtils.class
 com/agri/utils/JwtUtils.class
 com/agri/service/impl/ZChatService.class
@@ -90,6 +98,7 @@ com/agri/service/impl/RecognitionRecordServiceImpl.class
 com/agri/controller/NotificationController.class
 com/agri/mapper/DatasetMapper.class
 com/agri/config/WebConfig.class
+com/agri/controller/OperationLogController.class
 com/agri/dto/ResetPasswordDTO.class
 com/agri/service/impl/TrainingLogServiceImpl.class
 com/agri/service/NotificationService.class
@@ -98,6 +107,7 @@ com/agri/mapper/TrainingTaskMapper.class
 com/agri/controller/FLGoStatusController$TrainingStatus.class
 com/agri/service/SmsSenderService.class
 com/agri/mapper/DataTransactionMapper.class
+com/agri/constant/RoleEnum.class
 com/agri/model/Model.class
 com/agri/service/DatasetService.class
 com/agri/config/JwtAuthenticationFilter.class
@@ -111,6 +121,7 @@ com/agri/service/SecureMessageService.class
 com/agri/federation/DifferentialPrivacyService.class
 com/agri/service/impl/SmsServiceImpl.class
 com/agri/controller/HelloController.class
+com/agri/mapper/OperationLogMapper.class
 com/agri/service/SmsService.class
 com/agri/controller/FLGoController.class
 com/agri/controller/RegisterController.class

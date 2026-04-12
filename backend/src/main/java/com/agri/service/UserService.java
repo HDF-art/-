@@ -93,4 +93,16 @@ public interface UserService extends IService<User> {
      * @return 是否成功
      */
     boolean auditAdmin2(Long userId, Integer auditStatus);
+    
+    /**
+     * 获取待审核的二级管理员列表
+     * @return 待审核用户列表
+     */
+    java.util.List<User> getPendingAuditUsers();
+    
+    /**
+     * 获取已处理的审核用户列表
+     * @return 已处理用户列表
+     */
+    java.util.List<User> getProcessedAuditUsers();
 }

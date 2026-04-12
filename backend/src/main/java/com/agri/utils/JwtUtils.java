@@ -44,7 +44,14 @@ public class JwtUtils {
             
             result.put("valid", true);
             result.put("username", claims.getSubject());
-            result.put("userId", claims.get("userId"));
+            Object userIdObj = claims.get("userId");
+            if (userIdObj instanceof Integer) {
+                result.put("userId", ((Integer) userIdObj).longValue());
+            } else if (userIdObj instanceof Long) {
+                result.put("userId", userIdObj);
+            } else {
+                result.put("userId", Long.parseLong(userIdObj.toString()));
+            }
             result.put("role", claims.get("role"));
             
         } catch (ExpiredJwtException e) {
