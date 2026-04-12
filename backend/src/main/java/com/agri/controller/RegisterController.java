@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.*;
 
 import com.agri.utils.ResponseUtils;
+import com.agri.service.CacheService;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("")
@@ -24,6 +26,9 @@ public class RegisterController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private CacheService cacheService;
+
     /**
      * 发送注册验证码
      */
@@ -32,6 +37,20 @@ public class RegisterController {
         String email = params.get("email");
 
         try {
+            // 防刷机制: 60秒限流和每日次数限制
+            String lockKey = "email:lock:" + email;
+            String countKey = "email:count:" + email;
+            
+            if (cacheService.exists(lockKey)) {
+                return ResponseUtils.error(429, "验证码发送过于频繁，请60秒后再试");
+            }
+            
+            Object countObj = cacheService.get(countKey);
+            int count = countObj != null ? (int) countObj : 0;
+            if (count >= 5) {
+                return ResponseUtils.error(429, "该邮箱今日发送次数已达上限");
+            }
+
             // 检查邮箱是否已注册或正在审核
             User existingUser = userService.findByEmail(email);
             if (existingUser != null) {
@@ -44,6 +63,8 @@ public class RegisterController {
             // 发送验证码
             boolean sent = emailCodeService.sendCode(email);
             if (sent) {
+                cacheService.set(lockKey, "1", 60, TimeUnit.SECONDS);
+                cacheService.set(countKey, count + 1, 24, TimeUnit.HOURS);
                 return ResponseUtils.success("验证码已发送到邮箱");
             } else {
                 return ResponseUtils.error(500, "发送失败，请稍后重试");

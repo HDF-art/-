@@ -78,10 +78,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 String roleName;
                 if (role != null && !role.isEmpty()) {
-                    try {
+                    if (role.matches("\\d+")) {
                         int roleCode = Integer.parseInt(role);
                         roleName = RoleEnum.fromCode(roleCode).getValue().toUpperCase();
-                    } catch (NumberFormatException e) {
+                    } else {
                         roleName = role.toUpperCase();
                     }
                 } else {

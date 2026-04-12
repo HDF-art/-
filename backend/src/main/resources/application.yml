@@ -36,8 +36,8 @@ spring:
   
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+      max-file-size: 1024MB
+      max-request-size: 1024MB
 
 jwt:
   secret: ${JWT_SECRET}
@@ -51,7 +51,7 @@ model:
 upload:
   image-path: ${UPLOAD_IMAGE_PATH:./upload/images}
   model-path: ${UPLOAD_MODEL_PATH:./upload/models}
-  max-size: 10485760
+  max-size: 1073741824
 
 logging:
   level:

@@ -45,7 +45,7 @@ public class SecurityConfig {
                     "/users/send-code",
                     "/users/reset-password",
                     "/users/hello",
-                    "/email/**",
+                    "/email/send-code",
                     "/swagger-resources/**",
                     "/swagger-ui.html",
                     "/v2/api-docs",

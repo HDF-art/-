@@ -16,6 +16,11 @@ class FederatedTask:
     """联邦学习任务"""
     def __init__(self, task_id: str, name: str, dataset: str, algorithm: str, 
                  num_clients: int, num_rounds: int, num_epochs: int):
+        # 校验 task_id，防止路径穿越风险
+        import re
+        if not re.match(r'^[a-zA-Z0-9_-]+$', task_id):
+            raise ValueError(f"无效的 task_id: {task_id}")
+            
         self.task_id = task_id
         self.name = name
         self.dataset = dataset

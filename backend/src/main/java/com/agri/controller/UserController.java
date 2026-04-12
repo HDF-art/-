@@ -10,9 +10,9 @@ import com.agri.service.SmsService;
 import com.agri.service.UserService;
 import com.agri.utils.JwtUtils;
 import com.agri.utils.ResponseUtils;
-import com.agri.utils.FileUploadValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.agri.service.CacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -59,6 +60,9 @@ public class UserController {
     
     @Autowired
     private FileUploadValidator fileUploadValidator;
+    
+    @Autowired
+    private CacheService cacheService;
     
     @Value("${upload.image-path:/home/ubuntu/农业大数据联合建模平台/upload/images/}")
     private String uploadDirBase;
@@ -334,11 +338,33 @@ public class UserController {
     
     @PostMapping("/send-code")
     public ResponseUtils.ApiResponse<String> sendCode(@RequestBody SendCodeDTO sendCodeDTO) {
-        logger.info("发送验证码接口被调用，手机号：{}", sendCodeDTO.getPhone());
+        String phone = sendCodeDTO.getPhone();
+        logger.info("发送验证码接口被调用，手机号：{}", phone);
+        
         try {
-            boolean result = smsService.sendCode(sendCodeDTO.getPhone(), null);
-            return result ? ResponseUtils.success("验证码发送成功") : ResponseUtils.error(500, "验证码发送失败");
+            // 防刷机制: 60秒限流和每日次数限制
+            String lockKey = "sms:lock:" + phone;
+            String countKey = "sms:count:" + phone;
+            
+            if (cacheService.exists(lockKey)) {
+                return ResponseUtils.error(429, "验证码发送过于频繁，请60秒后再试");
+            }
+            
+            Object countObj = cacheService.get(countKey);
+            int count = countObj != null ? (int) countObj : 0;
+            if (count >= 5) {
+                return ResponseUtils.error(429, "该手机号今日发送次数已达上限");
+            }
+            
+            boolean result = smsService.sendCode(phone, null);
+            if (result) {
+                cacheService.set(lockKey, "1", 60, TimeUnit.SECONDS);
+                cacheService.set(countKey, count + 1, 24, TimeUnit.HOURS);
+                return ResponseUtils.success("验证码发送成功");
+            }
+            return ResponseUtils.error(500, "验证码发送失败");
         } catch (Exception e) {
+            logger.error("发送验证码异常", e);
             return ResponseUtils.error(400, "验证码发送失败");
         }
     }
@@ -440,6 +466,9 @@ public class UserController {
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String role) {
         try {
+            // 防御分页 DoS: 限制每页最大条数
+            size = Math.min(size == null ? 10 : size, 100);
+            
             // 使用 MyBatis-Plus 分页插件，将逻辑下推到数据库层面，防止 OOM
             Page<User> pageParam = new Page<>(page, size);
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
