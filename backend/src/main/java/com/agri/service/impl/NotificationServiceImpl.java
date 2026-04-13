@@ -1,10 +1,15 @@
 package com.agri.service.impl;
 
+import com.agri.dto.NotificationDTO;
 import com.agri.mapper.NotificationMapper;
 import com.agri.model.Notification;
 import com.agri.model.User;
 import com.agri.service.NotificationService;
 import com.agri.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,25 +46,22 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     }
 
     @Override
-    public boolean markAsRead(Long id) {
-        Notification notification = getById(id);
-        if (notification == null) {
-            return false;
-        }
-        notification.setStatus(1); // 已读
-        notification.setReadAt(LocalDateTime.now());
-        return updateById(notification);
+    public boolean markAllAsRead(Long userId) {
+        UpdateWrapper<Notification> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("receiver_id", userId).eq("status", 0);
+        updateWrapper.set("status", 1).set("read_at", LocalDateTime.now());
+        return update(updateWrapper);
     }
 
     @Override
-    public List<Notification> getUserNotifications(Long userId, Integer status) {
-        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Notification> queryWrapper = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Notification>();
-        queryWrapper.eq("receiver_id", userId);
+    public IPage<NotificationDTO> getUserNotifications(Page<NotificationDTO> page, Long userId, Integer status) {
+        QueryWrapper<Notification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("n.receiver_id", userId);
         if (status != null) {
-            queryWrapper.eq("status", status);
+            queryWrapper.eq("n.status", status);
         }
-        queryWrapper.orderByDesc("created_at");
-        return list(queryWrapper);
+        queryWrapper.orderByDesc("n.created_at");
+        return notificationMapper.selectUserNotificationsPage(page, queryWrapper);
     }
 
     @Override
@@ -181,7 +183,8 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
         }
         
         if (!notifications.isEmpty()) {
-            return saveBatch(notifications);
+            // 每 500 条进行一次批量保存，防止一次性保存过大数据导致数据库或内存问题
+            return saveBatch(notifications, 500);
         }
         return false;
     }

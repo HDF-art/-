@@ -1,6 +1,9 @@
 package com.agri.service;
 
+import com.agri.dto.NotificationDTO;
 import com.agri.model.Notification;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
@@ -24,19 +27,20 @@ public interface NotificationService extends IService<Notification> {
     boolean sendBatchNotifications(List<Notification> notifications);
 
     /**
-     * 标记通知为已读
-     * @param id 通知ID
+     * 将用户的所有通知标记为已读
+     * @param userId 用户ID
      * @return 标记结果
      */
-    boolean markAsRead(Long id);
+    boolean markAllAsRead(Long userId);
 
     /**
-     * 获取用户的通知列表
+     * 获取用户的通知分页列表
+     * @param page 分页参数
      * @param userId 用户ID
      * @param status 状态（0:未读, 1:已读, null:所有）
-     * @return 通知列表
+     * @return 分页列表
      */
-    List<Notification> getUserNotifications(Long userId, Integer status);
+    IPage<NotificationDTO> getUserNotifications(Page<NotificationDTO> page, Long userId, Integer status);
 
     /**
      * 获取用户的未读通知数量

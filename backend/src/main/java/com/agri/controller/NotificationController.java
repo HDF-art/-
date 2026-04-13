@@ -1,10 +1,12 @@
 package com.agri.controller;
 
-import com.agri.dto.SendNotificationDTO;
+import com.agri.dto.NotificationDTO;
 import com.agri.model.Notification;
 import com.agri.service.NotificationService;
 import com.agri.service.impl.NotificationServiceImpl;
 import com.agri.utils.ResponseUtils;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -80,23 +82,43 @@ public class NotificationController {
     @PutMapping("/{id}/read")
     public ResponseUtils.ApiResponse<Boolean> markAsRead(@PathVariable("id") Long id) {
         try {
-            boolean result = notificationService.markAsRead(id);
-            return ResponseUtils.success(result);
+            Notification notification = notificationService.getById(id);
+            if (notification != null) {
+                notification.setStatus(1);
+                notification.setReadAt(java.time.LocalDateTime.now());
+                boolean result = notificationService.updateById(notification);
+                return ResponseUtils.success(result);
+            }
+            return ResponseUtils.error(404, "通知未找到");
         } catch (Exception e) {
             return ResponseUtils.error(500, "标记通知为已读失败: " + e.getMessage());
         }
     }
 
     /**
-     * 获取用户的通知列表
+     * 将用户的所有通知标记为已读
      * @param userId 用户ID
-     * @param status 状态（0:未读, 1:已读, null:所有）
-     * @return 通知列表
+     * @return 标记结果
      */
-    @GetMapping("/user/{userId}")
-    public ResponseUtils.ApiResponse<List<Notification>> getUserNotifications(@PathVariable("userId") Long userId, @RequestParam(required = false) Integer status) {
+    @PutMapping("/user/{userId}/read-all")
+    public ResponseUtils.ApiResponse<Boolean> markAllAsRead(@PathVariable("userId") Long userId) {
         try {
-            List<Notification> notifications = notificationService.getUserNotifications(userId, status);
+            boolean result = notificationService.markAllAsRead(userId);
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            return ResponseUtils.error(500, "标记所有通知为已读失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseUtils.ApiResponse<IPage<NotificationDTO>> getUserNotifications(
+            @PathVariable("userId") Long userId,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize) {
+        try {
+            Page<NotificationDTO> page = new Page<>(pageNum, pageSize);
+            IPage<NotificationDTO> notifications = notificationService.getUserNotifications(page, userId, status);
             return ResponseUtils.success(notifications);
         } catch (Exception e) {
             return ResponseUtils.error(500, "获取通知列表失败: " + e.getMessage());

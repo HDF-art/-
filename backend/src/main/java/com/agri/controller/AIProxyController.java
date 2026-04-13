@@ -45,6 +45,10 @@ public class AIProxyController {
                 userId = jwtUtils.getUserIdFromToken(token);
             }
 
+            if (userId == null) {
+                return ResponseUtils.error(401, "未授权访问，请重新登录");
+            }
+
             if (userId != null) {
                 String limitKey = "rate_limit:ai:analyze:" + userId;
                 Object countObj = cacheService.get(limitKey);
@@ -70,6 +74,8 @@ public class AIProxyController {
                 if (totalLength > 8000) { // 限制 8000 字符
                     return ResponseUtils.error(400, "输入内容过长，请精简后再试");
                 }
+            } else {
+                return ResponseUtils.error(400, "参数格式错误：messages 必须为列表格式");
             }
             
             HttpHeaders headers = new HttpHeaders();

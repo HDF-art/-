@@ -42,8 +42,36 @@ class FLGoService:
         self.tasks: Dict[str, FederatedTask] = {}
         self.participants: Dict[str, List[str]] = {}  # task_id -> [client_ips]
         self.server_ip: Optional[str] = None
-        self.executor = ThreadPoolExecutor(max_workers=5)
+        self.max_workers = 5
+        self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
+        self.lock = threading.RLock()
+        self.MAX_TASKS = 100
         os.makedirs("./flgo_tasks", exist_ok=True)
+        
+    def _cleanup_tasks(self):
+        """清理旧任务，确保任务总量不超过限制"""
+        with self.lock:
+            if len(self.tasks) <= self.MAX_TASKS:
+                return
+                
+            # 优先清理已完成或失败的任务
+            finished_tasks = [tid for tid, t in self.tasks.items() 
+                             if t.status in ["COMPLETED", "FAILED"]]
+            
+            # 按结束时间或开始时间排序，删除最旧的
+            finished_tasks.sort(key=lambda tid: self.tasks[tid].end_time or 0)
+            
+            to_remove = len(self.tasks) - self.MAX_TASKS
+            for i in range(min(len(finished_tasks), to_remove)):
+                tid = finished_tasks[i]
+                del self.tasks[tid]
+                if tid in self.participants:
+                    del self.participants[tid]
+    
+    def get_running_task_count(self) -> int:
+        """获取当前正在运行的任务数量"""
+        with self.lock:
+            return sum(1 for t in self.tasks.values() if t.status == "RUNNING")
         
     def set_server_ip(self, ip: str):
         """设置服务器端IP"""
@@ -72,10 +100,16 @@ class FLGoService:
                      algorithm: str = "fedavg", num_clients: int = 5,
                      num_rounds: int = 10, num_epochs: int = 1) -> FederatedTask:
         """创建联邦学习任务"""
-        task = FederatedTask(task_id, name, dataset, algorithm, 
-                           num_clients, num_rounds, num_epochs)
-        self.tasks[task_id] = task
-        return task
+        with self.lock:
+            self._cleanup_tasks()
+            if len(self.tasks) >= self.MAX_TASKS:
+                # 如果清理后还是满的（全是运行中的），则拒绝
+                raise RuntimeError("系统任务列表已满且无空闲位置，请稍后再试")
+                
+            task = FederatedTask(task_id, name, dataset, algorithm, 
+                               num_clients, num_rounds, num_epochs)
+            self.tasks[task_id] = task
+            return task
     
     def get_dataset(self, dataset: str):
         """获取数据集"""
@@ -102,12 +136,17 @@ class FLGoService:
     
     def run_task_async(self, task_id: str):
         """异步运行任务"""
-        task = self.tasks.get(task_id)
-        if not task:
-            raise ValueError(f"任务 {task_id} 不存在")
+        with self.lock:
+            task = self.tasks.get(task_id)
+            if not task:
+                raise ValueError(f"任务 {task_id} 不存在")
             
-        task.status = "RUNNING"
-        task.start_time = time.time()
+            # 检查并发限制
+            if self.get_running_task_count() >= self.max_workers:
+                raise RuntimeError(f"系统资源已耗尽，请等待当前 {self.max_workers} 个运行中的任务结束")
+                
+            task.status = "RUNNING"
+            task.start_time = time.time()
         
         def run():
             try:

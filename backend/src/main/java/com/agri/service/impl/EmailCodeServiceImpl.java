@@ -1,15 +1,14 @@
 package com.agri.service.impl;
 
-import com.agri.service.EmailCodeService;
+import com.agri.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class EmailCodeServiceImpl implements EmailCodeService {
@@ -17,32 +16,34 @@ public class EmailCodeServiceImpl implements EmailCodeService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private CacheService cacheService;
+
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    private static final Map<String, String> codeMap = new HashMap<>();
-    private static final Map<String, Long> expireMap = new HashMap<>();
-    private static final Map<String, Long> sendTimeMap = new HashMap<>();
+    private static final String CODE_PREFIX = "email:code:";
+    private static final String SEND_TIME_PREFIX = "email:send_time:";
     
-    private static final long EXPIRE_TIME = 5 * 60 * 1000; 
-    private static final long SEND_INTERVAL = 60 * 1000; 
+    private static final long EXPIRE_TIME_MINUTES = 5; 
+    private static final long SEND_INTERVAL_SECONDS = 60; 
 
     @Override
     public boolean sendCode(String email) {
         try {
-            if (sendTimeMap.containsKey(email)) {
-                long lastSendTime = sendTimeMap.get(email);
-                long now = System.currentTimeMillis();
-                if (now - lastSendTime < SEND_INTERVAL) {
-                    System.out.println("验证码发送过于频繁，请" + ((SEND_INTERVAL - (now - lastSendTime)) / 1000) + "秒后重试");
-                    return false;
-                }
+            // 防刷检查
+            String sendTimeKey = SEND_TIME_PREFIX + email;
+            if (cacheService.exists(sendTimeKey)) {
+                System.out.println("验证码发送过于频繁，请稍后再试");
+                return false;
             }
             
             String code = generateCode();
-            codeMap.put(email, code);
-            expireMap.put(email, System.currentTimeMillis() + EXPIRE_TIME);
-            sendTimeMap.put(email, System.currentTimeMillis());
+            String codeKey = CODE_PREFIX + email;
+            
+            // 存入 Redis 并设置过期时间
+            cacheService.set(codeKey, code, EXPIRE_TIME_MINUTES, TimeUnit.MINUTES);
+            cacheService.set(sendTimeKey, String.valueOf(System.currentTimeMillis()), SEND_INTERVAL_SECONDS, TimeUnit.SECONDS);
 
             sendEmail(email, code);
 
@@ -76,23 +77,16 @@ public class EmailCodeServiceImpl implements EmailCodeService {
 
     @Override
     public boolean verifyCode(String email, String code) {
-        if (!codeMap.containsKey(email)) {
+        String codeKey = CODE_PREFIX + email;
+        Object storedCode = cacheService.get(codeKey);
+        
+        if (storedCode == null) {
             return false;
         }
 
-        long expireTime = expireMap.get(email);
-        if (System.currentTimeMillis() > expireTime) {
-            codeMap.remove(email);
-            expireMap.remove(email);
-            sendTimeMap.remove(email);
-            return false;
-        }
-
-        String storedCode = codeMap.get(email);
-        if (storedCode.equals(code)) {
-            codeMap.remove(email);
-            expireMap.remove(email);
-            sendTimeMap.remove(email);
+        if (storedCode.toString().equals(code)) {
+            cacheService.delete(codeKey);
+            // 验证通过不强制清除发送时间限制，防止短时间内大量重复验证
             return true;
         }
 
@@ -109,19 +103,13 @@ public class EmailCodeServiceImpl implements EmailCodeService {
     }
     
     public long getExpireSeconds(String email) {
-        if (!expireMap.containsKey(email)) {
-            return 0;
-        }
-        long remaining = (expireMap.get(email) - System.currentTimeMillis()) / 1000;
-        return remaining > 0 ? remaining : 0;
+        // 由于 CacheService 目前没有暴露取 TTL 的方法，这里简化返回一个标志位
+        // 或者直接根据是否存在来判断
+        return cacheService.exists(CODE_PREFIX + email) ? EXPIRE_TIME_MINUTES * 60 : 0;
     }
     
     public long getWaitSeconds(String email) {
-        if (!sendTimeMap.containsKey(email)) {
-            return 0;
-        }
-        long wait = (sendTimeMap.get(email) + SEND_INTERVAL - System.currentTimeMillis()) / 1000;
-        return wait > 0 ? wait : 0;
+        return cacheService.exists(SEND_TIME_PREFIX + email) ? SEND_INTERVAL_SECONDS : 0;
     }
     
     @Override

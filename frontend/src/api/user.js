@@ -191,12 +191,20 @@ export const markNotificationAsRead = (id) => {
   })
 }
 
+// 全部标为已读
+export const markAllNotificationsAsRead = (userId) => {
+  return request({
+    url: `/notifications/user/${userId}/read-all`,
+    method: 'put'
+  })
+}
+
 // 获取用户的通知列表
-export const getUserNotifications = (userId, status) => {
+export const getUserNotifications = (userId, params) => {
   return request({
     url: `/notifications/user/${userId}`,
     method: 'get',
-    params: { status }
+    params
   })
 }
 

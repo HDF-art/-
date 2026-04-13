@@ -25,7 +25,7 @@
             </div>
             <div class="notification-content">{{ notification.content }}</div>
             <div class="notification-footer">
-              <span class="sender">发送者: {{ getSenderName(notification.senderId) }}</span>
+              <span class="sender">发送者: {{ getSenderName(notification) }}</span>
               <span class="status" :class="{ 'unread-status': notification.status === 0 }">
                 {{ notification.status === 0 ? '未读' : '已读' }}
               </span>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { getUserNotifications, markNotificationAsRead, deleteNotification, getUserList } from '../../api/user'
+import { getUserNotifications, markNotificationAsRead, deleteNotification, markAllNotificationsAsRead } from '../../api/user'
 
 export default {
   name: 'NotificationList',
@@ -66,19 +66,9 @@ export default {
   },
   created() {
     this.loadNotifications()
-    this.loadUserList()
   },
   methods: {
-    async loadUserList() {
-      try {
-        const res = await getUserList()
-        if (res.data && res.data.data) {
-          this.userList = res.data.data
-        }
-      } catch (e) {
-        console.error('加载用户列表失败', e)
-      }
-    },
+
     loadNotifications() {
       this.loading = true
       const userStr = localStorage.getItem('user')
@@ -92,10 +82,16 @@ export default {
         }
       }
       
-      getUserNotifications(userId, null).then(response => {
+      const params = {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        status: null // 获取所有通知
+      }
+      
+      getUserNotifications(userId, params).then(response => {
         if (response.data.code === 200) {
-          this.notificationList = response.data.data
-          this.total = response.data.data.length
+          this.notificationList = response.data.data.records
+          this.total = response.data.data.total
         }
         this.loading = false
       }).catch(error => {
@@ -130,9 +126,16 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 这里可以实现批量标记已读的逻辑
-        this.$message.success('所有通知已标记为已读')
-        this.loadNotifications()
+        const userStr = localStorage.getItem('user')
+        if (userStr) {
+          const userId = JSON.parse(userStr).id
+          markAllNotificationsAsRead(userId).then(response => {
+            if (response.data.code === 200) {
+              this.$message.success('所有通知已标记为已读')
+              this.loadNotifications()
+            }
+          })
+        }
       }).catch(() => {
         this.$message.info('已取消操作')
       })
@@ -163,9 +166,8 @@ export default {
       const date = new Date(time)
       return date.toLocaleString('zh-CN')
     },
-    getSenderName(senderId) {
-      const sender = this.userList.find(user => user.id === senderId)
-      return sender ? sender.username : `用户${senderId}`
+    getSenderName(notification) {
+      return notification.senderName || `用户${notification.senderId}`
     }
   }
 }
