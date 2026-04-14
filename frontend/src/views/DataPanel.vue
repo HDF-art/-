@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="header-center">
-        <h1 class="title-animate">{{ panelTitle }}</h1>
+        <h1>{{ panelTitle }}</h1>
         <p class="subtitle">{{ currentTime }}</p>
       </div>
       <div class="header-right">
@@ -230,7 +230,6 @@ export default {
         } else if (this.isUser) {
           this.initUserCharts()
         } else {
-          // 默认显示一级管理员图表
           this.initAdmin1Charts()
         }
       })
@@ -248,18 +247,18 @@ export default {
     initFarmStatsChart() {
       const chart = echarts.init(document.getElementById('farmStatsChart'))
       const dist = (this.recognitionStats && this.recognitionStats.diseaseDistribution) || {}
-      const colors = ['#67C23A', '#E6A23C', '#409EFF', '#F56C6C', '#909399']
+      const colors = ['#00539B', '#059669', '#3B82F6', '#F59E0B', '#94A3B8']
       const chartData = Object.entries(dist).length > 0
         ? Object.entries(dist).map(([name, value], i) => ({ value, name, itemStyle: { color: colors[i % colors.length] } }))
-        : [{ value: 0, name: '暂无数据', itemStyle: { color: '#909399' } }]
+        : [{ value: 0, name: '暂无数据', itemStyle: { color: '#94A3B8' } }]
       const option = {
         tooltip: { trigger: 'item' },
-        legend: { bottom: '0%', textStyle: { color: '#fff' } },
+        legend: { bottom: '0%', textStyle: { color: '#475569' } },
         series: [{
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['50%', '45%'],
-          itemStyle: { borderRadius: 10, borderColor: '#1a1a2e', borderWidth: 2 },
+          itemStyle: { borderRadius: 10, borderColor: '#ffffff', borderWidth: 2 },
           data: chartData
         }]
       }
@@ -289,8 +288,8 @@ export default {
               text: ['高', '低'],
               realtime: false,
               calculable: true,
-              inRange: { color: ['#1a3a5c', '#2d5a7b', '#3d7a9a', '#4d9ab9', '#5dbad8'] },
-              textStyle: { color: '#fff' }
+              inRange: { color: ['#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#00539B'] },
+              textStyle: { color: '#475569' }
             },
             series: [{
               type: 'map',
@@ -298,17 +297,17 @@ export default {
               roam: true,
               label: { 
                 show: true, 
-                color: '#fff', 
+                color: '#475569', 
                 fontSize: 11 
               },
               itemStyle: { 
-                areaColor: '#1a3a5c', 
-                borderColor: '#3d7a9a', 
+                areaColor: '#F1F5F9', 
+                borderColor: '#CBD5E1', 
                 borderWidth: 1 
               },
               emphasis: { 
-                label: { show: true, color: '#fff', fontSize: 12 }, 
-                itemStyle: { areaColor: '#e94560' } 
+                label: { show: true, color: '#ffffff', fontSize: 12 }, 
+                itemStyle: { areaColor: '#00539B' } 
               },
               data: []
             }]
@@ -322,7 +321,7 @@ export default {
               type: 'group',
               children: [
                 { type: 'text', style: { text: '🗺️', x: 180, y: 150, fontSize: 40 } },
-                { type: 'text', style: { text: '地图加载失败', x: 150, y: 200, fill: '#fff', fontSize: 16 } }
+                { type: 'text', style: { text: '地图加载失败', x: 150, y: 200, fill: '#475569', fontSize: 16 } }
               ]
             }]
           })
@@ -334,16 +333,16 @@ export default {
       const chart = echarts.init(document.getElementById('deviceStatsChart'))
       const taskDist = (this.taskStatusStats && this.taskStatusStats.statusDistribution) || {}
       const statusNames = { PENDING: '待开始', RUNNING: '进行中', COMPLETED: '已完成', FAILED: '已失败' }
-      const statusColors = { PENDING: '#e6a23c', RUNNING: '#409eff', COMPLETED: '#67c23a', FAILED: '#f56c6c' }
+      const statusColors = { PENDING: '#F59E0B', RUNNING: '#00539B', COMPLETED: '#059669', FAILED: '#EF4444' }
       const categories = Object.keys(taskDist).length > 0 ? Object.keys(taskDist).map(k => statusNames[k] || k) : ['暂无数据']
       const values = Object.keys(taskDist).length > 0 ? Object.values(taskDist) : [0]
       const barColors = Object.keys(taskDist).length > 0
-        ? Object.keys(taskDist).map(k => new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: statusColors[k] || '#e94560' }, { offset: 1, color: '#0f3460' }]))
-        : [new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#909399' }, { offset: 1, color: '#0f3460' }])]
+        ? Object.keys(taskDist).map(k => statusColors[k] || '#94A3B8')
+        : ['#94A3B8']
       const option = {
         tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: categories, axisLabel: { color: '#fff' } },
-        yAxis: { type: 'value', axisLabel: { color: '#fff' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } } },
+        xAxis: { type: 'category', data: categories, axisLabel: { color: '#475569' } },
+        yAxis: { type: 'value', axisLabel: { color: '#475569' }, splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } } },
         series: [{
           type: 'bar',
           data: values.map((v, i) => ({ value: v, itemStyle: { color: barColors[i] } })),
@@ -363,11 +362,11 @@ export default {
           type: 'pie', radius: ['30%', '65%'], center: ['50%', '50%'],
           roseType: 'radius', itemStyle: { borderRadius: 5 },
           data: [
-            { value: roleStats.admin1Count || 0, name: '一级管理员', itemStyle: { color: '#e94560' } },
-            { value: roleStats.admin2Count || 0, name: '二级管理员', itemStyle: { color: '#0f3460' } },
-            { value: roleStats.userCount || 0, name: '普通用户', itemStyle: { color: '#16213e' } }
+            { value: roleStats.admin1Count || 0, name: '一级管理员', itemStyle: { color: '#00539B' } },
+            { value: roleStats.admin2Count || 0, name: '二级管理员', itemStyle: { color: '#0EA5E9' } },
+            { value: roleStats.userCount || 0, name: '普通用户', itemStyle: { color: '#94A3B8' } }
           ].filter(d => d.value > 0),
-          label: { color: '#fff' }
+          label: { color: '#475569' }
         }]
       }
       chart.setOption(option)
@@ -381,12 +380,12 @@ export default {
       const values = Object.keys(dailyCount).length > 0 ? Object.values(dailyCount) : [0]
       const option = {
         tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: dates, axisLabel: { color: '#fff' } },
-        yAxis: { type: 'value', axisLabel: { color: '#fff' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } } },
+        xAxis: { type: 'category', data: dates, axisLabel: { color: '#475569' } },
+        yAxis: { type: 'value', axisLabel: { color: '#475569' }, splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } } },
         series: [{
           type: 'line', data: values, smooth: true,
-          areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(233,69,96,0.5)' }, { offset: 1, color: 'rgba(233,69,96,0)' }]) },
-          itemStyle: { color: '#e94560' }
+          areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(0,83,155,0.2)' }, { offset: 1, color: 'rgba(0,83,155,0)' }]) },
+          itemStyle: { color: '#00539B' }
         }]
       }
       chart.setOption(option)
@@ -400,9 +399,9 @@ export default {
       const values = Object.keys(dailyCount).length > 0 ? Object.values(dailyCount) : [0]
       const option = {
         tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: dates, axisLabel: { color: '#fff' } },
-        yAxis: { type: 'value', axisLabel: { color: '#fff' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } } },
-        series: [{ type: 'bar', data: values, itemStyle: { color: '#409EFF' }, barWidth: '60%' }]
+        xAxis: { type: 'category', data: dates, axisLabel: { color: '#475569' } },
+        yAxis: { type: 'value', axisLabel: { color: '#475569' }, splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } } },
+        series: [{ type: 'bar', data: values, itemStyle: { color: '#00539B' }, barWidth: '60%' }]
       }
       chart.setOption(option)
       this.charts.weeklyActivity = chart
@@ -417,7 +416,7 @@ export default {
 <style scoped>
 .data-panel-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+  background-color: #F8FAFC;
   position: relative;
 }
 
@@ -425,31 +424,26 @@ export default {
 
 .bg-gradient {
   width: 100%; height: 100%;
-  background: radial-gradient(ellipse at 20% 20%, rgba(233,69,96,0.1) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 80%, rgba(64,158,255,0.1) 0%, transparent 50%);
+  background: radial-gradient(ellipse at 20% 20%, rgba(0,83,155,0.03) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(5,150,105,0.03) 0%, transparent 50%);
 }
 
 .header-bar {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 40px;
-  background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: #ffffff;
+  box-shadow: var(--diffused-shadow);
+  border-bottom: 1px solid #E2E8F0;
   position: relative; z-index: 10;
 }
 
-.header-center h1 { color: #fff; font-size: 28px; margin: 0; text-shadow: 0 0 20px rgba(233,69,96,0.5); }
-.title-animate { animation: glow 2s ease-in-out infinite alternate; }
+.header-center h1 { color: #0F172A; font-size: 28px; margin: 0; }
 
-@keyframes glow {
-  from { text-shadow: 0 0 10px rgba(233,69,96,0.5); }
-  to { text-shadow: 0 0 30px rgba(233,69,96,0.8); }
-}
-
-.subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin: 5px 0 0 0; }
+.subtitle { color: #475569; font-size: 14px; margin: 5px 0 0 0; }
 
 .stat-item { text-align: center; }
-.stat-label { display: block; color: rgba(255,255,255,0.6); font-size: 12px; }
-.stat-value { color: #e94560; font-size: 24px; font-weight: bold; }
+.stat-label { display: block; color: #475569; font-size: 12px; }
+.stat-value { color: #00539B; font-size: 24px; font-weight: bold; }
 .pulse { animation: pulse 2s infinite; }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
@@ -458,25 +452,25 @@ export default {
 .row { display: flex; gap: 20px; margin-bottom: 20px; }
 
 .panel {
-  background: rgba(255,255,255,0.05);
-  border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--diffused-shadow);
   overflow-y: auto; overflow-x: hidden; flex: 1;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.panel:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(233,69,96,0.2); }
+.panel:hover { transform: translateY(-4px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.08); }
 .main-panel { flex: 2; }
 
 .panel-header {
   padding: 15px 20px;
-  background: linear-gradient(90deg, rgba(233,69,96,0.2), rgba(64,158,255,0.2));
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: #F8FAFC;
+  border-bottom: 1px solid #F1F5F9;
   display: flex; align-items: center; gap: 10px;
-  color: #fff; font-weight: bold;
+  color: #0F172A; font-weight: bold;
 }
 
-.panel-header i { font-size: 18px; color: #e94560; }
+.panel-header i { font-size: 18px; color: #00539B; }
 .panel-body { padding: 15px; }
 
 .fade-in { animation: fadeIn 0.5s ease-out; }
@@ -488,24 +482,26 @@ export default {
 .footer-stats {
   display: flex; justify-content: center; gap: 40px;
   padding: 30px;
-  background: rgba(0,0,0,0.3);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  background: #ffffff;
+  box-shadow: var(--diffused-shadow);
+  border-top: 1px solid #E2E8F0;
   position: relative; z-index: 10;
 }
 
 .stat-box {
   display: flex; align-items: center; gap: 15px;
   padding: 15px 30px;
-  background: linear-gradient(135deg, rgba(233,69,96,0.1), rgba(64,158,255,0.1));
-  border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--diffused-shadow);
   transition: transform 0.3s;
 }
 
 .stat-box:hover { transform: scale(1.05); }
-.stat-box i { font-size: 30px; color: #e94560; }
+.stat-box i { font-size: 30px; color: #00539B; }
 .stat-info { display: flex; flex-direction: column; }
-.stat-num { color: #fff; font-size: 24px; font-weight: bold; }
-.stat-name { color: rgba(255,255,255,0.6); font-size: 12px; }
+.stat-num { color: #0F172A; font-size: 24px; font-weight: bold; }
+.stat-name { color: #475569; font-size: 12px; }
 
 @media (max-width: 1200px) { .row { flex-wrap: wrap; } .panel { min-width: calc(50% - 10px); } }
 @media (max-width: 768px) { .header-bar { flex-direction: column; gap: 15px; } .panel { min-width: 100%; } .footer-stats { flex-wrap: wrap; } }

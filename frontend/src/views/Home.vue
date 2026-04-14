@@ -94,7 +94,10 @@
           
           <el-dropdown trigger="click">
             <span class="user-info">
-              <el-avatar :size="36" :src="userAvatar" class="user-avatar"></el-avatar>
+              <el-avatar :size="36" class="user-avatar" :style="{ backgroundColor: userHasAvatar ? 'transparent' : '#00539B' }">
+                <template v-if="!userHasAvatar">{{ userAvatarText }}</template>
+                <img v-else :src="userAvatar" alt="avatar">
+              </el-avatar>
               <span class="user-name">{{ effectiveUser.username || '管理员' }}</span>
               <i class="el-icon-arrow-down"></i>
             </span>
@@ -119,7 +122,10 @@
       <el-aside :width="sidebarWidth" class="home-aside" :class="{ 'collapse': isCollapse }">
         <div class="sidebar-header" v-if="!isCollapse && user">
           <div class="sidebar-user">
-            <el-avatar :size="48" :src="userAvatar"></el-avatar>
+            <el-avatar :size="48" :style="{ backgroundColor: userHasAvatar ? 'transparent' : '#00539B' }">
+              <template v-if="!userHasAvatar">{{ userAvatarText }}</template>
+              <img v-else :src="userAvatar" alt="avatar">
+            </el-avatar>
             <div class="user-details">
               <p class="sidebar-username">{{ effectiveUser.username || '管理员' }}</p>
               <p class="sidebar-role">{{ getRoleName(effectiveUser.role) }}</p>
@@ -304,12 +310,23 @@ export default {
     effectiveUser() {
       return this.user || { role: 2 }
     },
+    userHasAvatar() {
+      return this.effectiveUser && this.effectiveUser.avatar
+    },
     userAvatar() {
-      if (this.effectiveUser && this.effectiveUser.avatar) {
+      if (this.userHasAvatar) {
         return this.effectiveUser.avatar
       }
-      const seed = this.effectiveUser?.username || this.effectiveUser?.id || 'default'
-      return `https://api.dicebear.com/9.x/jdenticon/svg?seed=${encodeURIComponent(seed)}`
+      return ''
+    },
+    userAvatarText() {
+      const username = this.effectiveUser?.username || '管理员'
+      if (!username) return 'A'
+      const chineseCharMatch = username.match(/[\u4e00-\u9fa5]/)
+      if (chineseCharMatch) {
+        return chineseCharMatch[0]
+      }
+      return username.charAt(0).toUpperCase()
     }
   },
   created() {

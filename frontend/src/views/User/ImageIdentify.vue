@@ -31,6 +31,7 @@
           
           <div class="upload-section">
             <el-upload
+              v-if="!imageUrl"
               class="upload-demo"
               drag
               action=""

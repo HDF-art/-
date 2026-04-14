@@ -9,7 +9,10 @@
           <div class="welcome-time">{{ currentTime }}</div>
         </div>
         <div class="welcome-avatar">
-          <el-avatar :size="80" :src="getUserAvatar()" class="user-avatar pulse-animation"></el-avatar>
+          <el-avatar :size="80" :style="{ backgroundColor: userHasAvatar ? 'transparent' : '#00539B' }" class="user-avatar pulse-animation">
+            <template v-if="!userHasAvatar">{{ userAvatarText }}</template>
+            <img v-else :src="getUserAvatar()" class="avatar">
+          </el-avatar>
           <div class="user-role-badge" :class="getRoleClass()">{{ getRoleName() }}</div>
         </div>
       </div>
@@ -181,7 +184,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user']),
+    userHasAvatar() {
+      return this.user && this.user.avatar
+    },
+    userAvatarText() {
+      const username = this.user?.username || '管理员'
+      if (!username) return 'A'
+      const chineseCharMatch = username.match(/[\u4e00-\u9fa5]/)
+      if (chineseCharMatch) {
+        return chineseCharMatch[0]
+      }
+      return username.charAt(0).toUpperCase()
+    }
   },
   created() {
     // 根据用户角色设置图表标题
@@ -287,9 +302,13 @@ export default {
     
     // 获取用户头像
     getUserAvatar() {
-      // 实际项目中可以根据用户信息返回真实头像
-      const role = this.user ? this.user.role : 'user'
-      return `/static/avatars/${role}-avatar.png`
+      if (this.user && this.user.avatar) {
+        if (this.user.avatar.startsWith('http://') || this.user.avatar.startsWith('https://')) {
+          return this.user.avatar
+        }
+        return `${process.env.VUE_APP_API_URL || 'http://localhost:8100/api'}${this.user.avatar}`
+      }
+      return ''
     },
     
     // 获取用户角色名称

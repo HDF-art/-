@@ -14,7 +14,11 @@ import java.util.Map;
 public interface OperationLogMapper extends BaseMapper<OperationLog> {
 
     @Select("<script>" +
-            "SELECT ol.*, u.username, u.role as user_role, u.farm_id as user_farm_id, f.name as user_farm_name " +
+            "SELECT ol.id, ol.user_id as userId, ol.operation_type as operationType, ol.module, ol.description, " +
+            "ol.request_method as requestMethod, ol.request_uri as requestUri, ol.request_params as requestParams, " +
+            "ol.response_status as responseStatus, ol.response_time as responseTime, ol.ip_address as ipAddress, " +
+            "ol.user_agent as userAgent, ol.result, ol.error_message as errorMessage, ol.log_date as logDate, " +
+            "ol.created_at as createdAt, u.username, u.role as userRole, u.farm_id as userFarmId, f.name as userFarmName " +
             "FROM operation_log ol " +
             "LEFT JOIN user u ON ol.user_id = u.id " +
             "LEFT JOIN farm f ON u.farm_id = f.id " +
