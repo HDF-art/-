@@ -1,6 +1,7 @@
 package com.agri.mapper;
 
 import com.agri.dto.NotificationDTO;
+import com.agri.model.Notification;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -18,6 +19,4 @@ public interface NotificationMapper extends BaseMapper<Notification> {
     IPage<NotificationDTO> selectUserNotificationsPage(
             IPage<NotificationDTO> page, 
             @Param(Constants.WRAPPER) Wrapper<Notification> queryWrapper);
-}
-
 }

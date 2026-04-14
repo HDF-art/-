@@ -111,6 +111,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/EmailCodeService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/config/WebConfig.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/FarmController.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/NotificationDTO.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/DataCirculation.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/DatasetServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java

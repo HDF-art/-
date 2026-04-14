@@ -1,6 +1,7 @@
 package com.agri.controller;
 
 import com.agri.dto.NotificationDTO;
+import com.agri.dto.SendNotificationDTO;
 import com.agri.model.Notification;
 import com.agri.service.NotificationService;
 import com.agri.service.impl.NotificationServiceImpl;

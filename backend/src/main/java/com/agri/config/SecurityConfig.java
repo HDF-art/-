@@ -46,6 +46,7 @@ public class SecurityConfig {
                     "/users/reset-password",
                     "/users/hello",
                     "/email/send-code",
+                    "/models/**",
                     "/swagger-resources/**",
                     "/swagger-ui.html",
                     "/v2/api-docs",

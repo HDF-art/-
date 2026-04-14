@@ -131,21 +131,21 @@ INSERT INTO `model` (`name`, `type`, `file_path`, `accuracy`, `is_default`, `cre
 ON DUPLICATE KEY UPDATE `is_default` = 1;
 
 -- 注意：模型能识别的15个类别如下：
--- 0: Curculionidae (稻象甲科)
--- 1: Delphacidae (飞虱科)
--- 2: Cicadellidae (叶蝉科)
--- 3: Phlaeothripidae (管蓟马科)
--- 4: Cecidomyiidae (瘿蚊科)
--- 5: Hesperiidae (弄蝶科)
--- 6: Crambidae (草螟科)
--- 7: Chloropidae (秆蝇科)
--- 8: Ephydridae (水蝇科)
--- 9: Noctuidae (夜蛾科)
--- 10: Thripidae (蓟马科)
--- 11: Bacterialblight (细菌性白叶枯病)
--- 12: Blast (稻瘟病)
--- 13: Brownspot (褐斑病)
--- 14: Tungro (钨谷病毒病)
+-- 0: 稻象甲科 (Curculionidae)
+-- 1: 飞虱科 (Delphacidae)
+-- 2: 叶蝉科 (Cicadellidae)
+-- 3: 管蓟马科 (Phlaeothripidae)
+-- 4: 瘿蚊科 (Cecidomyiidae)
+-- 5: 弄蝶科 (Hesperiidae)
+-- 6: 草螟科 (Crambidae)
+-- 7: 秆蝇科 (Chloropidae)
+-- 8: 水蝇科 (Ephydridae)
+-- 9: 夜蛾科 (Noctuidae)
+-- 10: 蓟马科 (Thripidae)
+-- 11: 细菌性白叶枯病 (Bacterialblight)
+-- 12: 稻瘟病 (Blast)
+-- 13: 褐斑病 (Brownspot)
+-- 14: 东格鲁病 (Tungro)
 
 -- 注意：上面的密码是加密后的'admin123'，实际项目中应该使用安全的密码策略
 

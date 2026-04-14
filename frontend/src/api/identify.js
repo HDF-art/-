@@ -17,13 +17,16 @@ export const identifyImage = (formData) => {
     }
   }
   
-  // 构建请求FormData
-  const requestData = new FormData();
-  requestData.append('file', formData.get('image'));
-  requestData.append('userId', userId);
-  requestData.append('cropType', '水稻'); // 默认作物类型
-  requestData.append('taskType', formData.get('taskType') || 'pest_disease'); // 任务类型
-  requestData.append('modelId', formData.get('modelId') || 'default'); // 模型ID
+  // 构建请求FormData - 直接使用传入的formData或重新构建
+  const requestData = formData;
+  
+  // 确保必要字段存在
+  if (!requestData.has('userId')) {
+    requestData.append('userId', userId);
+  }
+  if (!requestData.has('cropType')) {
+    requestData.append('cropType', '水稻');
+  }
   
   // 调用后端识别接口
   return request({
@@ -60,7 +63,7 @@ export const identifyImage = (formData) => {
         diseaseName: backendData.result || '未知',
         confidence: backendData.confidence || 0,
         details: details,
-        imageUrl: backendData.imagePath || URL.createObjectURL(formData.get('image')),
+        imageUrl: backendData.imagePath || '',
         identifyTime: backendData.createdAt || new Date().toISOString(),
         preventionAdvice: backendData.preventionAdvice || '请咨询专业农业技术人员',
         recordId: backendData.id

@@ -95,6 +95,7 @@ com/agri/model/SecureMessage.class
 com/agri/controller/FLGoStatusController.class
 com/agri/service/CacheService.class
 com/agri/service/impl/RecognitionRecordServiceImpl.class
+com/agri/dto/NotificationDTO.class
 com/agri/controller/NotificationController.class
 com/agri/mapper/DatasetMapper.class
 com/agri/config/WebConfig.class

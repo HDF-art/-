@@ -44,21 +44,21 @@ transform = transforms.Compose([
 # 病虫害类别(必须与训练时的类别数量和顺序一致)
 # 根据模型实际训练的15个类别
 CLASSES = [
-    'Curculionidae (稻象甲科)',      # 0 - 823 images
-    'Delphacidae (飞虱科)',           # 1 - 857 images  
-    'Cicadellidae (叶蝉科)',          # 2 - 833 images
-    'Phlaeothripidae (管蓟马科)',     # 3 - 384 images
-    'Cecidomyiidae (瘿蚊科)',         # 4 - 759 images
-    'Hesperiidae (弄蝶科)',           # 5 - 820 images
-    'Crambidae (草螟科)',             # 6 - 620 images
-    'Chloropidae (秆蝇科)',           # 7 - 212 images
-    'Ephydridae (水蝇科)',            # 8 - 203 images
-    'Noctuidae (夜蛾科)',             # 9 - 363 images
-    'Thripidae (蓟马科)',             # 10 - 433 images
-    'Bacterialblight (细菌性白叶枯病)', # 11 - 1584 images
-    'Blast (稻瘟病)',                 # 12 - 1440 images
-    'Brownspot (褐斑病)',             # 13 - 1600 images
-    'Tungro (钨谷病毒病)'              # 14 - 1308 images
+    '稻象甲科',      # 0 - Curculionidae
+    '飞虱科',        # 1 - Delphacidae
+    '叶蝉科',        # 2 - Cicadellidae
+    '管蓟马科',      # 3 - Phlaeothripidae
+    '瘿蚊科',        # 4 - Cecidomyiidae
+    '弄蝶科',        # 5 - Hesperiidae
+    '草螟科',        # 6 - Crambidae
+    '秆蝇科',        # 7 - Chloropidae
+    '水蝇科',        # 8 - Ephydridae
+    '夜蛾科',        # 9 - Noctuidae
+    '蓟马科',        # 10 - Thripidae
+    '细菌性白叶枯病', # 11 - Bacterialblight
+    '稻瘟病',        # 12 - Blast
+    '褐斑病',        # 13 - Brownspot
+    '东格鲁病'       # 14 - Tungro
 ]
 
 # 加载模型
@@ -80,7 +80,7 @@ def load_model():
         
         # 加载模型权重
         if os.path.exists(MODEL_PATH):
-            checkpoint = torch.load(MODEL_PATH, map_location=device)
+            checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
             
             # 处理不同的权重保存格式
             if isinstance(checkpoint, dict):

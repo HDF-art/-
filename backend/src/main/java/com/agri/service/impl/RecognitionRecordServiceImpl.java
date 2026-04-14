@@ -73,7 +73,7 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", new ByteArrayResource(fileBytes) {
+            body.add("file", new ByteArrayResource(fileBytes) {
                 @Override
                 public String getFilename() {
                     return fileName;
@@ -92,15 +92,12 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
             String prevention = "请稍后再试";
             double confidence = 0.5;
             
-            if (result != null && result.contains("disease")) {
+            if (result != null && result.contains("diseaseName")) {
                 try {
                     com.fasterxml.jackson.databind.JsonNode json = 
                         new com.fasterxml.jackson.databind.ObjectMapper().readTree(result);
-                    if (json.has("disease")) {
-                        disease = json.get("disease").asText();
-                    }
-                    if (json.has("treatment")) {
-                        prevention = json.get("treatment").asText();
+                    if (json.has("diseaseName")) {
+                        disease = json.get("diseaseName").asText();
                     }
                     if (json.has("confidence")) {
                         confidence = json.get("confidence").asDouble();

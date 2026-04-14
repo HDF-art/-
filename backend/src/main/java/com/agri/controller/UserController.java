@@ -8,6 +8,7 @@ import com.agri.model.UserPrincipal;
 import com.agri.service.EmailCodeService;
 import com.agri.service.SmsService;
 import com.agri.service.UserService;
+import com.agri.utils.FileUploadValidator;
 import com.agri.utils.JwtUtils;
 import com.agri.utils.ResponseUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

@@ -22,8 +22,14 @@
   box-sizing: border-box;
 }
 
-html, body, #app {
+html, body {
   height: 100%;
+  overflow-x: hidden;
+}
+
+#app {
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 body {

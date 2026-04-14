@@ -45,7 +45,7 @@ jwt:
 
 model:
   service:
-    url: ${MODEL_SERVICE_URL:http://localhost:5000/api/crop-disease}
+    url: ${MODEL_SERVICE_URL:http://localhost:5000/predict}
   save-path: ${MODEL_SAVE_PATH:./models}
 
 upload:

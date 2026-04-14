@@ -509,9 +509,10 @@ export default {
 */
 
 .home-container {
-  height: 100vh;
+  min-height: 100vh;
   background-color: #F8FAFC;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* 顶部导航栏 - 毛玻璃特效 */
@@ -565,7 +566,7 @@ export default {
 /* 悬浮侧边栏 */
 .home-aside {
   margin: 92px 0 20px 24px;
-  height: calc(100vh - 112px);
+  min-height: calc(100vh - 112px);
   background: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -573,7 +574,8 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .home-aside.collapse {
@@ -922,7 +924,8 @@ export default {
 
 .notification-detail-dialog {
   border-radius: 20px !important;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .notification-detail-dialog .el-dialog__header {
