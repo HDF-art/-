@@ -67,6 +67,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/AuditLogController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/RegisterController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/AuditRequestServiceImpl.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/FedlabController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/TrainingLogController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/FarmMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/AuditRequest.java
@@ -102,7 +103,6 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/RecognitionRecordMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/NotificationService.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/federation/ModelEvaluationService.java
-/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/FLGoController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/NotificationMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/ModelServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/PhoneLoginDTO.java
@@ -115,6 +115,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/DataCirculation.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/DatasetServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/NotificationServiceImpl.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/dto/FedLabTaskConfigDTO.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/TrainingLogServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/TaskParticipationController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/DataTransactionService.java

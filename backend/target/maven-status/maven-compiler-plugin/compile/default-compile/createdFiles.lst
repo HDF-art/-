@@ -77,6 +77,7 @@ com/agri/mapper/LocalDatasetMapper.class
 com/agri/mapper/TaskParticipationMapper.class
 com/agri/dto/SendNotificationDTO.class
 com/agri/controller/DataCirculationController.class
+com/agri/controller/FedlabController.class
 com/agri/model/DataTransaction.class
 com/agri/federation/FederatedTask.class
 com/agri/service/FarmService.class
@@ -112,6 +113,7 @@ com/agri/constant/RoleEnum.class
 com/agri/model/Model.class
 com/agri/service/DatasetService.class
 com/agri/config/JwtAuthenticationFilter.class
+com/agri/dto/FedLabTaskConfigDTO.class
 com/agri/controller/UserController.class
 com/agri/config/SecurityConfig.class
 com/agri/service/RecognitionRecordService.class
@@ -124,7 +126,6 @@ com/agri/service/impl/SmsServiceImpl.class
 com/agri/controller/HelloController.class
 com/agri/mapper/OperationLogMapper.class
 com/agri/service/SmsService.class
-com/agri/controller/FLGoController.class
 com/agri/controller/RegisterController.class
 com/agri/federation/AuditLogService$AuditLog.class
 com/agri/controller/EmailController.class

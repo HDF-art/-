@@ -43,6 +43,12 @@ const routes = [
         component: () => import('../views/FederatedLearningCenter.vue'),
         meta: { title: '模型训练' }
       },
+      {
+        path: 'fedlab-center',
+        name: 'FedlabCenter',
+        component: () => import('../views/FedlabCenter.vue'),
+        meta: { title: 'FedLab 联邦学习' }
+      },
 
       {
         path: 'audit-log',
