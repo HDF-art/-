@@ -1,826 +1,665 @@
 <template>
-  <div class="federated-center">
-    <!-- 顶部标题 -->
-    <div class="center-header">
-      <h1>🤖 联邦学习中心</h1>
-      <p>一站式分布式模型训练平台</p>
+  <div class="fl-page">
+    <div class="fl-header">
+      <div class="fl-header-inner">
+        <h1 class="fl-title">联邦学习中心</h1>
+        <p class="fl-subtitle">分布式模型训练与协作管理</p>
+      </div>
     </div>
 
-    <!-- 功能导航卡片 -->
-    <el-row :gutter="20" class="nav-cards">
-      <el-col :span="6">
-        <el-card class="nav-card" @click.native="activeTab = 'training'">
-          <div class="nav-icon">🚀</div>
-          <div class="nav-title">创建训练</div>
-          <div class="nav-desc">创建新的联邦训练任务</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="nav-card" @click.native="activeTab = 'browser-training'">
-          <div class="nav-icon">🧠</div>
-          <div class="nav-title">浏览器训练</div>
-          <div class="nav-desc">在浏览器中进行模型训练</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="nav-card" @click.native="activeTab = 'tasks'">
-          <div class="nav-icon">📋</div>
-          <div class="nav-title">任务管理</div>
-          <div class="nav-desc">查看和管理训练任务</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="nav-card" @click.native="activeTab = 'models'">
-          <div class="nav-icon">🧠</div>
-          <div class="nav-title">模型管理</div>
-          <div class="nav-desc">查看和使用训练模型</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="nav-card" @click.native="activeTab = 'clients'">
-          <div class="nav-icon">👥</div>
-          <div class="nav-title">客户端</div>
-          <div class="nav-desc">管理参与训练的客户端</div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 主内容区域 -->
-    <el-card class="content-card">
-      <!-- 创建训练 -->
-      <div v-show="activeTab === 'training'" class="tab-content">
-        <h3>🚀 创建联邦训练任务</h3>
-        <el-form :model="taskForm" label-width="120px" class="task-form">
-          <el-form-item label="任务名称">
-            <el-input v-model="taskForm.taskName" placeholder="请输入任务名称"></el-input>
-          </el-form-item>
-          
-          <el-form-item label="选择算法">
-            <el-select v-model="taskForm.algorithm" placeholder="请选择算法">
-              <el-option label="FedAvg (联邦平均)" value="FedAvg"></el-option>
-              <el-option label="FedAdaPriv (自适应差分隐私)" value="FedAdaPriv"></el-option>
-              <el-option label="FedProx" value="FedProx"></el-option>
-              <el-option label="SCAFFOLD" value="SCAFFOLD"></el-option>
-            </el-select>
-          </el-form-item>
-          
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="训练轮数">
-                <el-slider v-model="taskForm.rounds" :min="1" :max="100" show-stops></el-slider>
-                <span>{{ taskForm.rounds }} 轮</span>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="参与客户端">
-                <el-slider v-model="taskForm.clients" :min="2" :max="20" show-stops></el-slider>
-                <span>{{ taskForm.clients }} 个客户端</span>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          
-          <el-form-item label="隐私保护">
-            <el-switch v-model="taskForm.enablePrivacy"></el-switch>
-            <span class="help-text">开启差分隐私保护</span>
-          </el-form-item>
-          
-          <el-form-item v-if="taskForm.enablePrivacy" label="隐私预算 ε">
-            <el-slider v-model="taskForm.epsilon" :min="0.1" :max="10" :step="0.1"></el-slider>
-            <span>ε = {{ taskForm.epsilon }}</span>
-          </el-form-item>
-          
-          <el-form-item label="安全聚合">
-            <el-switch v-model="taskForm.enableSecure"></el-switch>
-            <span class="help-text">启用安全聚合协议</span>
-          </el-form-item>
-          
-          <el-form-item>
-            <el-button type="primary" @click="createTask" :loading="loading">
-              启动训练
-            </el-button>
-            <el-button @click="resetForm">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <!-- 浏览器训练 -->
-      <div v-show="activeTab === 'browser-training'" class="tab-content">
-        <div class="training-container">
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span class="card-title">🧠 浏览器联邦学习训练</span>
-        <el-button style="float: right;" type="primary" size="small" @click="showHelp = true">
-          帮助
-        </el-button>
-      </div>
-      
-      <!-- 训练配置 -->
-      <el-form :model="config" label-width="120px" class="training-form">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="选择模型">
-              <el-select v-model="config.modelType" placeholder="请选择模型" style="width: 100%;">
-                <el-option label="CNN (图像分类)" value="CNN"></el-option>
-                <el-option label="LSTM (时序预测)" value="LSTM"></el-option>
-                <el-option label="XGBoost (表格数据GBo)" value="Xost"></el-option>
-                <el-option label="线性回归" value="LinearRegression"></el-option>
-                <el-option label="逻辑回归" value="LogisticRegression"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="选择算法">
-              <el-select v-model="config.algorithm" placeholder="请选择算法" style="width: 100%;">
-                <el-option label="FedAvg (联邦平均)" value="FedAvg"></el-option>
-                <el-option label="FedProx (近端优化)" value="FedProx"></el-option>
-                <el-option label="SCAFFOLD (方差减少)" value="SCAFFOLD"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="通信轮次">
-              <el-input-number v-model="config.rounds" :min="1" :max="100" style="width: 100%;"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="本地轮次">
-              <el-input-number v-model="config.epochs" :min="1" :max="50" style="width: 100%;"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="学习率">
-              <el-input-number v-model="config.learningRate" :min="0.001" :max="1" :step="0.01" style="width: 100%;"></el-input-number>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <el-divider content-position="left">🔒 隐私保护 (可选)</el-divider>
-        
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="差分隐私">
-              <el-switch v-model="config.enableDP"></el-switch>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" v-if="config.enableDP">
-            <el-form-item label="隐私预算 ε">
-              <el-slider v-model="config.epsilon" :min="0.1" :max="10" :step="0.1" show-stops></el-slider>
-              <span class="hint">越小越隐私</span>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="安全聚合">
-              <el-switch v-model="config.enableSecureAgg"></el-switch>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <el-divider content-position="left">📊 评估指标</el-divider>
-        
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <el-checkbox v-model="config.metrics.accuracy">准确率</el-checkbox>
-          </el-col>
-          <el-col :span="6">
-            <el-checkbox v-model="config.metrics.precision">精确率</el-checkbox>
-          </el-col>
-          <el-col :span="6">
-            <el-checkbox v-model="config.metrics.recall">召回率</el-checkbox>
-          </el-col>
-          <el-col :span="6">
-            <el-checkbox v-model="config.metrics.f1">F1分数</el-checkbox>
-          </el-col>
-        </el-row>
-        
-        <el-form-item>
-          <el-button type="primary" size="large" @click="startTraining" :loading="training" :disabled="training">
-            <i class="el-icon-video-play"></i> 开始训练
-          </el-button>
-          <el-button size="large" @click="stopTraining" :disabled="!training">
-            <i class="el-icon-video-pause"></i> 停止
-          </el-button>
-        </el-form-item>
-      </el-form>
-      
-      <!-- 训练进度 -->
-      <div v-if="training || history.length > 0" class="progress-section">
-        <el-divider content-position="left">📈 训练进度</el-divider>
-        
-        <el-progress :percentage="progress" :status="progressStatus" :stroke-width="20"></el-progress>
-        
-        <p class="progress-info">
-          当前轮次: {{ currentRound }} / {{ config.rounds }} | 
-          损失: {{ currentLoss.toFixed(4) }} | 
-          准确率: {{ currentAccuracy.toFixed(2) }}%
-        </p>
-        
-        <!-- 训练曲线 -->
-        <div v-if="history.length > 0" class="chart-container">
-          <canvas ref="chartCanvas" width="600" height="300"></canvas>
+    <div class="fl-body">
+      <div class="fl-tabs">
+        <div
+          v-for="tab in tabs"
+          :key="tab.key"
+          :class="['fl-tab', { active: activeTab === tab.key }]"
+          @click="switchTab(tab.key)"
+        >
+          <i :class="tab.icon"></i>
+          <span>{{ tab.label }}</span>
         </div>
       </div>
-      
-      <!-- 评估结果 -->
-      <div v-if="evaluationResults" class="results-section">
-        <el-divider content-position="left">📊 评估结果</el-divider>
-        
-        <el-row :gutter="20">
-          <el-col :span="6" v-if="evaluationResults.accuracy !== undefined">
-            <el-card class="result-card">
-              <div class="result-value">{{ (evaluationResults.accuracy * 100).toFixed(2) }}%</div>
-              <div class="result-label">准确率</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.precision">
-            <el-card class="result-card">
-              <div class="result-value">{{ (evaluationResults.precision[0] * 100).toFixed(2) }}%</div>
-              <div class="result-label">精确率</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.recall">
-            <el-card class="result-card">
-              <div class="result-value">{{ (evaluationResults.recall[0] * 100).toFixed(2) }}%</div>
-              <div class="result-label">召回率</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.f1Score">
-            <el-card class="result-card">
-              <div class="result-value">{{ (evaluationResults.f1Score[0] * 100).toFixed(2) }}%</div>
-              <div class="result-label">F1分数</div>
-            </el-card>
-          </el-col>
-        </el-row>
-        
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="6" v-if="evaluationResults.mse !== undefined">
-            <el-card class="result-card">
-              <div class="result-value">{{ evaluationResults.mse.toFixed(4) }}</div>
-              <div class="result-label">MSE</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.rmse !== undefined">
-            <el-card class="result-card">
-              <div class="result-value">{{ evaluationResults.rmse.toFixed(4) }}</div>
-              <div class="result-label">RMSE</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.r2 !== undefined">
-            <el-card class="result-card">
-              <div class="result-value">{{ evaluationResults.r2.toFixed(4) }}</div>
-              <div class="result-label">R²</div>
-            </el-card>
-          </el-col>
-          <el-col :span="6" v-if="evaluationResults.mae !== undefined">
-            <el-card class="result-card">
-              <div class="result-value">{{ evaluationResults.mae.toFixed(4) }}</div>
-              <div class="result-label">MAE</div>
-            </el-card>
-          </el-col>
-        </el-row>
+
+      <div class="fl-content">
+        <div v-if="activeTab === 'overview'" class="fl-panel">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-num">{{ taskList.length }}</div>
+              <div class="stat-label">训练任务</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">{{ runningCount }}</div>
+              <div class="stat-label">进行中</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">{{ completedCount }}</div>
+              <div class="stat-label">已完成</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">{{ modelList.length }}</div>
+              <div class="stat-label">可用模型</div>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <i class="el-icon-tickets"></i>
+            <span>最近任务</span>
+          </div>
+          <el-table
+            :data="taskList.slice(0, 5)"
+            stripe
+            style="width: 100%"
+            v-loading="loading"
+            empty-text="暂无训练任务"
+          >
+            <el-table-column prop="id" label="ID" width="70"></el-table-column>
+            <el-table-column prop="name" label="任务名称" min-width="180"></el-table-column>
+            <el-table-column prop="modelType" label="算法" width="120"></el-table-column>
+            <el-table-column prop="status" label="状态" width="100">
+              <template slot-scope="scope">
+                <span :class="'status-tag status-' + (scope.row.status || '').toLowerCase()">
+                  {{ statusLabel(scope.row.status) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createdAt" label="创建时间" width="170">
+              <template slot-scope="scope">
+                {{ formatTime(scope.row.createdAt) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
+        <div v-if="activeTab === 'create'" class="fl-panel">
+          <div class="section-title">
+            <i class="el-icon-circle-plus-outline"></i>
+            <span>创建训练任务</span>
+          </div>
+          <el-form
+            ref="taskForm"
+            :model="taskForm"
+            :rules="taskRules"
+            label-width="130px"
+            class="fl-form"
+          >
+            <el-form-item label="任务名称" prop="taskName">
+              <el-input v-model="taskForm.taskName" placeholder="请输入任务名称"></el-input>
+            </el-form-item>
+            <el-form-item label="选择算法" prop="algorithm">
+              <el-select v-model="taskForm.algorithm" placeholder="请选择" style="width:100%">
+                <el-option label="FedAvg" value="FedAvg"></el-option>
+                <el-option label="FedProx" value="FedProx"></el-option>
+                <el-option label="SCAFFOLD" value="SCAFFOLD"></el-option>
+                <el-option label="FedAdaPriv" value="FedAdaPriv"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="通信轮次" prop="communicationRounds">
+                  <el-input-number
+                    v-model="taskForm.communicationRounds"
+                    :min="1"
+                    :max="200"
+                    style="width:100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="本地轮次">
+                  <el-input-number
+                    v-model="taskForm.localEpochs"
+                    :min="1"
+                    :max="50"
+                    style="width:100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="参与方数量">
+                  <el-input-number
+                    v-model="taskForm.worldSize"
+                    :min="2"
+                    :max="100"
+                    style="width:100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="服务器端口">
+                  <el-input-number
+                    v-model="taskForm.serverPort"
+                    :min="1024"
+                    :max="65535"
+                    style="width:100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="数据集">
+              <el-input v-model="taskForm.dataset" placeholder="数据集路径或名称"></el-input>
+            </el-form-item>
+            <el-form-item label="服务器地址">
+              <el-input v-model="taskForm.serverIp" placeholder="如 192.168.1.100"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="createTask" :loading="submitting">创建任务</el-button>
+              <el-button @click="resetForm">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+
+        <div v-if="activeTab === 'tasks'" class="fl-panel">
+          <div class="section-title">
+            <i class="el-icon-document"></i>
+            <span>任务管理</span>
+            <el-button
+              type="primary"
+              size="small"
+              style="margin-left:auto"
+              @click="fetchTasks"
+              :loading="loading"
+            >
+              <i class="el-icon-refresh"></i> 刷新
+            </el-button>
+          </div>
+          <el-table
+            :data="taskList"
+            stripe
+            style="width: 100%"
+            v-loading="loading"
+            empty-text="暂无训练任务"
+          >
+            <el-table-column prop="id" label="ID" width="70"></el-table-column>
+            <el-table-column prop="name" label="任务名称" min-width="180"></el-table-column>
+            <el-table-column prop="modelType" label="算法" width="120"></el-table-column>
+            <el-table-column prop="status" label="状态" width="100">
+              <template slot-scope="scope">
+                <span :class="'status-tag status-' + (scope.row.status || '').toLowerCase()">
+                  {{ statusLabel(scope.row.status) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="accuracy" label="准确率" width="100">
+              <template slot-scope="scope">
+                {{ scope.row.accuracy ? (scope.row.accuracy * 100).toFixed(2) + '%' : '-' }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="createdAt" label="创建时间" width="170">
+              <template slot-scope="scope">
+                {{ formatTime(scope.row.createdAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="220" fixed="right">
+              <template slot-scope="scope">
+                <el-button size="mini" @click="viewTask(scope.row)">详情</el-button>
+                <el-button
+                  size="mini"
+                  type="success"
+                  v-if="scope.row.status === 'CREATED'"
+                  @click="startTask(scope.row)"
+                >启动</el-button>
+                <el-button
+                  size="mini"
+                  type="warning"
+                  v-if="scope.row.status === 'RUNNING'"
+                  @click="stopTask(scope.row)"
+                >停止</el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="deleteTask(scope.row)"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
+        <div v-if="activeTab === 'models'" class="fl-panel">
+          <div class="section-title">
+            <i class="el-icon-coin"></i>
+            <span>模型仓库</span>
+            <el-button
+              type="primary"
+              size="small"
+              style="margin-left:auto"
+              @click="fetchModels"
+              :loading="loading"
+            >
+              <i class="el-icon-refresh"></i> 刷新
+            </el-button>
+          </div>
+          <el-table
+            :data="modelList"
+            stripe
+            style="width: 100%"
+            v-loading="loading"
+            empty-text="暂无模型"
+          >
+            <el-table-column prop="id" label="ID" width="70"></el-table-column>
+            <el-table-column prop="name" label="模型名称" min-width="180"></el-table-column>
+            <el-table-column prop="type" label="类型" width="100"></el-table-column>
+            <el-table-column prop="accuracy" label="准确率" width="100">
+              <template slot-scope="scope">
+                {{ scope.row.accuracy ? (scope.row.accuracy * 100).toFixed(2) + '%' : '-' }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="description" label="备注" min-width="150"></el-table-column>
+            <el-table-column prop="isDefault" label="默认" width="70">
+              <template slot-scope="scope">
+                <i
+                  v-if="scope.row.isDefault === 1"
+                  class="el-icon-check"
+                  style="color:#059669;font-size:16px"
+                ></i>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createdAt" label="创建时间" width="170">
+              <template slot-scope="scope">
+                {{ formatTime(scope.row.createdAt) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
-      
-      <!-- 训练历史 -->
-      <div v-if="history.length > 0" class="history-section">
-        <el-divider content-position="left">📋 训练历史</el-divider>
-        
-        <el-table :data="history" style="width: 100%;">
-          <el-table-column prop="round" label="轮次" width="80"></el-table-column>
-          <el-table-column prop="loss" label="损失" width="120"></el-table-column>
-          <el-table-column prop="accuracy" label="准确率" width="120">
-            <template slot-scope="scope">
-              {{ (scope.row.accuracy * 100).toFixed(2) }}%
-            </template>
-          </el-table-column>
-          <el-table-column prop="time" label="训练时间" width="150"></el-table-column>
-          <el-table-column prop="status" label="状态">
-            <template slot-scope="scope">
-              <el-tag :type="scope.row.status === '完成' ? 'success' : 'info'" size="small">
-                {{ scope.row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-        </el-table>
+    </div>
+
+    <el-dialog
+      title="任务详情"
+      :visible.sync="detailVisible"
+      width="640px"
+      append-to-body
+    >
+      <div v-if="currentTask" class="task-detail">
+        <el-descriptions :column="2" border size="medium">
+          <el-descriptions-item label="任务ID">{{ currentTask.id }}</el-descriptions-item>
+          <el-descriptions-item label="任务名称">{{ currentTask.name }}</el-descriptions-item>
+          <el-descriptions-item label="算法">{{ currentTask.modelType }}</el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <span :class="'status-tag status-' + (currentTask.status || '').toLowerCase()">
+              {{ statusLabel(currentTask.status) }}
+            </span>
+          </el-descriptions-item>
+          <el-descriptions-item label="准确率">
+            {{ currentTask.accuracy ? (currentTask.accuracy * 100).toFixed(2) + '%' : '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="数据集">{{ currentTask.datasetPath || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ formatTime(currentTask.createdAt) }}</el-descriptions-item>
+          <el-descriptions-item label="开始时间">{{ formatTime(currentTask.startTime) }}</el-descriptions-item>
+          <el-descriptions-item label="结束时间">{{ formatTime(currentTask.endTime) }}</el-descriptions-item>
+        </el-descriptions>
+        <div v-if="currentTask.parameters" style="margin-top:16px">
+          <div class="section-title" style="margin-bottom:8px">
+            <i class="el-icon-setting"></i>
+            <span>训练参数</span>
+          </div>
+          <pre class="params-box">{{ formatParams(currentTask.parameters) }}</pre>
+        </div>
       </div>
-    </el-card>
-    
-    <!-- 帮助对话框 -->
-    <el-dialog title="联邦学习帮助" :visible.sync="showHelp" width="600px;">
-      <el-steps direction="vertical" :active="4">
-        <el-step title="1. 选择模型" description="根据您的数据选择合适的模型：图像选CNN，表格数据选XGBoost"></el-step>
-        <el-step title="2. 配置参数" description="设置训练轮次、学习率等参数"></el-step>
-        <el-step title="3. 隐私保护" description="可开启差分隐私和安全聚合保护数据"></el-step>
-        <el-step title="4. 开始训练" description="点击开始训练，浏览器将执行模型训练"></el-step>
-        <el-step title="5. 查看结果" description="训练完成后查看准确率等评估指标"></el-step>
-      </el-steps>
     </el-dialog>
-  </div>
-      </div>
-
-      <!-- 任务管理 -->
-      <div v-show="activeTab === 'tasks'" class="tab-content">
-        <h3>📋 训练任务管理</h3>
-        <el-table :data="tasks" stripe>
-          <el-table-column prop="id" label="ID" width="60"></el-table-column>
-          <el-table-column prop="taskName" label="任务名称"></el-table-column>
-          <el-table-column prop="algorithm" label="算法" width="100"></el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
-            <template slot-scope="scope">
-              <el-tag :type="scope.row.status === 'running' ? 'success' : 'info'">
-                {{ scope.row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="progress" label="进度" width="150">
-            <template slot-scope="scope">
-              <el-progress :percentage="scope.row.progress"></el-progress>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="150">
-            <template slot-scope="scope">
-              <el-button size="mini" @click="viewTask(scope.row)">查看</el-button>
-              <el-button size="mini" type="danger" @click="deleteTask(scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-
-      <!-- 模型管理 -->
-      <div v-show="activeTab === 'models'" class="tab-content">
-        <h3>🧠 模型管理</h3>
-        <el-table :data="models" stripe>
-          <el-table-column prop="id" label="ID" width="60"></el-table-column>
-          <el-table-column prop="name" label="模型名称"></el-table-column>
-          <el-table-column prop="accuracy" label="准确率" width="100">
-            <template slot-scope="scope">
-              {{ (scope.row.accuracy * 100).toFixed(2) }}%
-            </template>
-          </el-table-column>
-          <el-table-column prop="createTime" label="创建时间"></el-table-column>
-          <el-table-column label="操作" width="150">
-            <template slot-scope="scope">
-              <el-button size="mini" @click="downloadModel(scope.row)">下载</el-button>
-              <el-button size="mini" type="danger" @click="deleteModel(scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-
-      <!-- 客户端管理 -->
-      <div v-show="activeTab === 'clients'" class="tab-content">
-        <h3>👥 参与客户端</h3>
-        <el-table :data="clients" stripe>
-          <el-table-column prop="id" label="ID" width="60"></el-table-column>
-          <el-table-column prop="name" label="客户端名称"></el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
-            <template slot-scope="scope">
-              <el-tag :type="scope.row.status === 'online' ? 'success' : 'danger'">
-                {{ scope.row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="samples" label="样本数" width="100"></el-table-column>
-          <el-table-column label="操作" width="150">
-            <template slot-scope="scope">
-              <el-button size="mini" @click="viewClient(scope.row)">详情</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </el-card>
   </div>
 </template>
 
 <script>
+import * as fedlab from '@/api/fedlab'
+import { getModelList } from '@/api/user'
+
 export default {
   name: 'FederatedLearningCenter',
   data() {
     return {
-      activeTab: 'training',
+      activeTab: 'overview',
       loading: false,
+      submitting: false,
+      detailVisible: false,
+      currentTask: null,
+      taskList: [],
+      modelList: [],
       taskForm: {
         taskName: '',
         algorithm: 'FedAvg',
-        rounds: 10,
-        clients: 5,
-        enablePrivacy: false,
-        epsilon: 1.0,
-        enableSecure: false
+        communicationRounds: 10,
+        localEpochs: 1,
+        worldSize: 2,
+        serverPort: 3002,
+        serverIp: '',
+        dataset: ''
       },
-      tasks: [
-        { id: 1, taskName: 'MobileNetV2 水稻病害识别', algorithm: 'FedAvg', status: 'running', progress: 65 },
-        { id: 2, taskName: '产量预测模型', algorithm: 'FedProx', status: 'completed', progress: 100 }
-      ],
-      models: [
-        { id: 1, name: 'MobileNetV2 水稻病害识别模型', accuracy: 0.92, createTime: '2026-03-15' },
-        { id: 2, name: '产量预测模型', accuracy: 0.88, createTime: '2026-03-14' }
-      ],
-      clients: [
-        { id: 1, name: '客户端A', status: 'online', samples: 1000 },
-        { id: 2, name: '客户端B', status: 'online', samples: 800 },
-        { id: 3, name: '客户端C', status: 'offline', samples: 0 }
-      ],
-      config: {
-        modelType: 'CNN',
-        algorithm: 'FedAvg',
-        rounds: 10,
-        epochs: 5,
-        learningRate: 0.01,
-        enableDP: false,
-        epsilon: 1.0,
-        enableSecureAgg: false,
-        metrics: {
-          accuracy: true,
-          precision: true,
-          recall: true,
-          f1: true
-        }
+      taskRules: {
+        taskName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
+        algorithm: [{ required: true, message: '请选择算法', trigger: 'change' }]
       },
-      training: false,
-      progress: 0,
-      currentRound: 0,
-      currentLoss: 0,
-      currentAccuracy: 0,
-      history: [],
-      evaluationResults: null,
-      showHelp: false,
-      model: null,
-      trainingTimer: null
+      tabs: [
+        { key: 'overview', label: '总览', icon: 'el-icon-data-board' },
+        { key: 'create', label: '创建任务', icon: 'el-icon-circle-plus-outline' },
+        { key: 'tasks', label: '任务管理', icon: 'el-icon-document' },
+        { key: 'models', label: '模型仓库', icon: 'el-icon-coin' }
+      ]
     }
   },
   computed: {
-    progressStatus() {
-      if (this.progress >= 100) return 'success'
-      if (this.progress > 0) return 'warning'
-      return null
+    runningCount() {
+      return this.taskList.filter(t => t.status === 'RUNNING').length
+    },
+    completedCount() {
+      return this.taskList.filter(t => t.status === 'COMPLETED').length
     }
   },
+  mounted() {
+    this.fetchTasks()
+    this.fetchModels()
+  },
   methods: {
-    createTask() {
-      if (!this.taskForm.taskName) {
-        this.$message.warning('请输入任务名称')
-        return
-      }
+    switchTab(key) {
+      this.activeTab = key
+      if (key === 'tasks' || key === 'overview') this.fetchTasks()
+      if (key === 'models') this.fetchModels()
+    },
+    async fetchTasks() {
       this.loading = true
-      setTimeout(() => {
-        this.$message.success('训练任务已启动')
-        this.loading = false
-        this.tasks.unshift({
-          id: this.tasks.length + 1,
-          taskName: this.taskForm.taskName,
-          algorithm: this.taskForm.algorithm,
-          status: 'running',
-          progress: 0
-        })
-        this.activeTab = 'tasks'
-      }, 1000)
+      try {
+        const res = await fedlab.getTasks()
+        const data = res.data || res
+        this.taskList = Array.isArray(data) ? data : (data.data || [])
+      } catch (e) {
+        console.warn('获取任务列表失败:', e.message)
+        this.taskList = []
+      }
+      this.loading = false
+    },
+    async fetchModels() {
+      this.loading = true
+      try {
+        const res = await getModelList({ page: 1, pageSize: 100 })
+        const data = res.data || res
+        this.modelList = data.records || data.data || (Array.isArray(data) ? data : [])
+      } catch (e) {
+        console.warn('获取模型列表失败:', e.message)
+        this.modelList = []
+      }
+      this.loading = false
+    },
+    createTask() {
+      this.$refs.taskForm.validate(async (valid) => {
+        if (!valid) return
+        this.submitting = true
+        try {
+          await fedlab.createTask(this.taskForm)
+          this.$message.success('任务创建成功')
+          this.resetForm()
+          this.activeTab = 'tasks'
+          this.fetchTasks()
+        } catch (e) {
+          this.$message.error('创建失败: ' + (e.message || '未知错误'))
+        }
+        this.submitting = false
+      })
     },
     resetForm() {
       this.taskForm = {
         taskName: '',
         algorithm: 'FedAvg',
-        rounds: 10,
-        clients: 5,
-        enablePrivacy: false,
-        epsilon: 1.0,
-        enableSecure: false
+        communicationRounds: 10,
+        localEpochs: 1,
+        worldSize: 2,
+        serverPort: 3002,
+        serverIp: '',
+        dataset: ''
+      }
+      if (this.$refs.taskForm) this.$refs.taskForm.clearValidate()
+    },
+    async startTask(row) {
+      try {
+        await fedlab.startTask(row.id)
+        this.$message.success('任务已启动')
+        this.fetchTasks()
+      } catch (e) {
+        this.$message.error('启动失败: ' + (e.message || '未知错误'))
       }
     },
-    viewTask(row) {
-      this.$message.info('查看任务: ' + row.taskName)
+    async stopTask(row) {
+      try {
+        await fedlab.stopTask(row.id)
+        this.$message.success('任务已停止')
+        this.fetchTasks()
+      } catch (e) {
+        this.$message.error('停止失败: ' + (e.message || '未知错误'))
+      }
     },
     deleteTask(row) {
-      this.$confirm('确定删除此任务?', '提示', {
-        confirmButtonText: '确定',
+      this.$confirm('确定删除该任务？', '确认', {
+        confirmButtonText: '删除',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.tasks = this.tasks.filter(t => t.id !== row.id)
-        this.$message.success('删除成功')
-      })
-    },
-    downloadModel(row) {
-      this.$message.success('开始下载: ' + row.name)
-    },
-    deleteModel(row) {
-      this.$confirm('确定删除此模型?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.models = this.models.filter(m => m.id !== row.id)
-        this.$message.success('删除成功')
-      })
-    },
-    viewClient(row) {
-      this.$message.info('客户端: ' + row.name)
-    },
-    // 简单的神经网络训练 (纯JavaScript实现)
-    async startTraining() {
-      this.training = true
-      this.progress = 0
-      this.currentRound = 0
-      this.history = []
-      this.evaluationResults = null
-      
-      // 初始化模型参数
-      const inputSize = this.config.modelType === 'CNN' ? 784 : 10
-      const outputSize = 10
-      
-      // 随机初始化权重
-      let weights1 = this.randomMatrix(inputSize, 64)
-      let bias1 = new Array(64).fill(0).map(() => Math.random() * 0.01)
-      let weights2 = this.randomMatrix(64, outputSize)
-      let bias2 = new Array(outputSize).fill(0).map(() => Math.random() * 0.01)
-      
-      // 模拟数据
-      const numSamples = 1000
-      const X = []
-      const y = []
-      for (let i = 0; i < numSamples; i++) {
-        X.push(Array(inputSize).fill(0).map(() => Math.random()))
-        y.push(Math.floor(Math.random() * outputSize))
-      }
-      
-      // 联邦学习轮次
-      for (let round = 1; round <= this.config.rounds; round++) {
-        if (!this.training) break
-        
-        this.currentRound = round
-        this.progress = Math.round((round / this.config.rounds) * 100)
-        
-        // 本地训练 (模拟)
-        let totalLoss = 0
-        for (let epoch = 0; epoch < this.config.epochs; epoch++) {
-          // 前向传播
-          const hidden = this.relu(this.matrixMultiply(X, weights1).map((v, i) => v + bias1[i]))
-          const output = this.softmax(this.matrixMultiply(hidden, weights2).map((v, i) => v + bias2[i]))
-          
-          // 计算损失 (交叉熵)
-          let loss = 0
-          for (let i = 0; i < output.length; i++) {
-            const target = y[i]
-            loss -= Math.log(Math.max(output[i][target], 1e-10))
-          }
-          totalLoss = loss / output.length
-          
-          // 简单梯度下降 (模拟)
-          const lr = this.config.learningRate
-          weights1 = weights1.map(row => row.map(w => w - lr * (Math.random() - 0.5) * 0.01))
-          weights2 = weights2.map(row => row.map(w => w - lr * (Math.random() - 0.5) * 0.01))
+      }).then(async () => {
+        try {
+          await fedlab.stopTask(row.id)
+          this.$message.success('删除成功')
+          this.fetchTasks()
+        } catch (e) {
+          this.$message.error('删除失败: ' + (e.message || '未知错误'))
         }
-        
-        // 计算准确率
-        const predictions = []
-        for (let i = 0; i < X.length; i++) {
-          const hidden = this.relu(this.matrixMultiply([X[i]], weights1)[0].map((v, j) => v + bias1[j]))
-          const output = this.softmax(this.matrixMultiply([hidden], weights2)[0].map((v, j) => v + bias2[j]))
-          predictions.push(output[0].indexOf(Math.max(...output[0])))
-        }
-        
-        const accuracy = predictions.filter((p, i) => p === y[i]).length / y.length
-        
-        this.currentLoss = totalLoss
-        this.currentAccuracy = accuracy * 100
-        
-        // 记录历史
-        this.history.push({
-          round,
-          loss: totalLoss,
-          accuracy,
-          time: new Date().toLocaleTimeString(),
-          status: '完成'
-        })
-        
-        // 绘制图表
-        this.drawChart()
-        
-        // 模拟通信延迟
-        await new Promise(resolve => setTimeout(resolve, 500))
+      }).catch(() => {})
+    },
+    viewTask(row) {
+      this.currentTask = row
+      this.detailVisible = true
+    },
+    statusLabel(status) {
+      const map = {
+        CREATED: '已创建',
+        PENDING: '等待中',
+        RUNNING: '进行中',
+        COMPLETED: '已完成',
+        FAILED: '已失败',
+        STOPPED: '已停止'
       }
-      
-      this.training = false
-      this.progress = 100
-      
-      // 评估结果
-      this.evaluationResults = {
-        accuracy: this.currentAccuracy / 100,
-        precision: [0.85 + Math.random() * 0.1],
-        recall: [0.83 + Math.random() * 0.1],
-        f1Score: [0.84 + Math.random() * 0.1],
-        mse: this.currentLoss / 100,
-        rmse: Math.sqrt(this.currentLoss / 100),
-        r2: 0.75 + Math.random() * 0.2,
-        mae: this.currentLoss / 50
+      return map[status] || status || '-'
+    },
+    formatTime(t) {
+      if (!t) return '-'
+      if (Array.isArray(t)) {
+        const [y, m, d, h, min, s] = t
+        return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h || 0).padStart(2, '0')}:${String(min || 0).padStart(2, '0')}:${String(s || 0).padStart(2, '0')}`
       }
-      
-      this.$message.success('训练完成！')
+      return String(t).replace('T', ' ').substring(0, 19)
     },
-    
-    stopTraining() {
-      this.training = false
-      this.$message.info('训练已停止')
-    },
-    
-    // 矩阵运算辅助函数
-    randomMatrix(rows, cols) {
-      return Array(rows).fill(0).map(() => 
-        Array(cols).fill(0).map(() => (Math.random() * 2 - 1) * 0.01)
-      )
-    },
-    
-    matrixMultiply(X, W) {
-      return X.map(row => 
-        W[0].map((_, j) => row.reduce((sum, x, k) => sum + x * W[k][j], 0))
-      )
-    },
-    
-    relu(x) {
-      return x.map(v => Math.max(0, v))
-    },
-    
-    softmax(x) {
-      const exp = x.map(v => Math.exp(v - Math.max(...x)))
-      const sum = exp.reduce((a, b) => a + b, 0)
-      return exp.map(v => v / sum)
-    },
-    
-    // 绘制训练曲线
-    drawChart() {
-      const canvas = this.$refs.chartCanvas
-      if (!canvas) return
-      
-      const ctx = canvas.getContext('2d')
-      const width = canvas.width
-      const height = canvas.height
-      
-      // 清空
-      ctx.fillStyle = '#f5f5f5'
-      ctx.fillRect(0, 0, width, height)
-      
-      // 绘制损失曲线
-      ctx.strokeStyle = '#409EFF'
-      ctx.lineWidth = 2
-      ctx.beginPath()
-      
-      const lossHistory = this.history.map(h => h.loss)
-      const maxLoss = Math.max(...lossHistory, 1)
-      
-      lossHistory.forEach((loss, i) => {
-        const x = (i / (lossHistory.length - 1)) * (width - 40) + 20
-        const y = height - 20 - (loss / maxLoss) * (height - 40)
-        if (i === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      })
-      ctx.stroke()
-      
-      // 绘制准确率曲线
-      ctx.strokeStyle = '#67C23A'
-      ctx.beginPath()
-      
-      const accHistory = this.history.map(h => h.accuracy)
-      
-      accHistory.forEach((acc, i) => {
-        const x = (i / (accHistory.length - 1)) * (width - 40) + 20
-        const y = height - 20 - acc * (height - 40)
-        if (i === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      })
-      ctx.stroke()
-      
-      // 图例
-      ctx.fillStyle = '#409EFF'
-      ctx.fillRect(20, 10, 20, 3)
-      ctx.fillStyle = '#000'
-      ctx.fillText('损失', 45, 15)
-      
-      ctx.fillStyle = '#67C23A'
-      ctx.fillRect(100, 10, 20, 3)
-      ctx.fillStyle = '#000'
-      ctx.fillText('准确率', 125, 15)
+    formatParams(p) {
+      if (!p) return ''
+      try {
+        return JSON.stringify(typeof p === 'string' ? JSON.parse(p) : p, null, 2)
+      } catch (e) {
+        return String(p)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.federated-center {
-  padding: 20px;
+.fl-page {
+  min-height: 100vh;
+  background: #F1F5F9;
 }
 
-.center-header {
-  text-align: center;
-  margin-bottom: 30px;
+.fl-header {
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%);
+  padding: 40px 0 36px;
 }
 
-.center-header h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
+.fl-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-.center-header p {
-  color: #666;
-  font-size: 16px;
+.fl-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
 }
 
-.nav-cards {
+.fl-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.fl-body {
+  max-width: 1200px;
+  margin: -24px auto 40px;
+  padding: 0 24px;
+}
+
+.fl-tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
-.nav-card {
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.3s;
-}
-
-.nav-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.nav-icon {
-  font-size: 40px;
-  margin-bottom: 10px;
-}
-
-.nav-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.nav-desc {
+.fl-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 28px;
   font-size: 14px;
-  color: #666;
+  color: #64748B;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  user-select: none;
 }
 
-.content-card {
-  min-height: 500px;
+.fl-tab:hover {
+  color: #0F172A;
+  background: #F8FAFC;
 }
 
-.tab-content h3 {
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+.fl-tab.active {
+  color: #0F172A;
+  font-weight: 600;
+  border-bottom-color: #00539B;
 }
 
-.task-form {
-  max-width: 600px;
+.fl-content {
+  min-height: 400px;
 }
 
-.help-text {
-  margin-left: 10px;
-  color: #999;
-  font-size: 12px;
+.fl-panel {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 24px;
 }
 
-.training-container {
+.stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  flex: 1;
+  background: #F8FAFC;
+  border-radius: 8px;
   padding: 20px;
-}
-.training-form {
-  max-width: 900px;
-}
-.progress-section {
-  margin-top: 30px;
-}
-.progress-info {
   text-align: center;
-  color: #606266;
-  margin: 15px 0;
+  border: 1px solid #E2E8F0;
 }
-.chart-container {
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
+
+.stat-num {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1;
+  margin-bottom: 6px;
 }
-.results-section {
-  margin-top: 30px;
+
+.stat-label {
+  font-size: 13px;
+  color: #64748B;
 }
-.result-card {
-  text-align: center;
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F5F9;
 }
-.result-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #409EFF;
-}
-.result-label {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 5px;
-}
-.history-section {
-  margin-top: 30px;
-}
-.hint {
-  font-size: 12px;
-  color: #909399;
-  margin-left: 10px;
-}
-.card-title {
+
+.section-title i {
+  color: #00539B;
   font-size: 18px;
-  font-weight: bold;
+}
+
+.fl-form {
+  max-width: 640px;
+  padding-top: 8px;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-created {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.status-pending {
+  background: #FEF9C3;
+  color: #A16207;
+}
+
+.status-running {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.status-completed {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.status-failed {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.status-stopped {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+.task-detail {
+  padding: 4px 0;
+}
+
+.params-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 </style>

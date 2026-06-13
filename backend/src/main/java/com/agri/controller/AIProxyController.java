@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/ai")
 @CrossOrigin
 public class AIProxyController {
     

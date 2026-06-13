@@ -52,4 +52,24 @@ public class UserInfoDTO {
      */
     private String farmName;
 
+    /**
+     * 单位名称
+     */
+    private String organization;
+
+    /**
+     * 省份
+     */
+    private String province;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 详细地址
+     */
+    private String address;
+
 }

@@ -40,13 +40,13 @@ public class SecurityConfig {
             .securityContext().disable()
             .authorizeRequests()
                 .antMatchers(
-                    "/users/login",
-                    "/users/phone-login",
-                    "/users/send-code",
-                    "/users/reset-password",
-                    "/users/hello",
-                    "/email/send-code",
+                    "/users/**",
+                    "/email/**",
+                    "/register/**",
                     "/models/**",
+                    "/system/**",
+                    "/stats/**",
+                    "/recognition-records/**",
                     "/swagger-resources/**",
                     "/swagger-ui.html",
                     "/v2/api-docs",

@@ -30,13 +30,10 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     
-    // 根据后端定义的响应格式进行处理
-    if (res.code !== 200) {
+    if (res.code !== undefined && res.code !== 200) {
       console.error('请求失败:', res.message || '未知错误')
       
-      // 处理特定错误码
       if (res.code === 401) {
-        // 未授权，清除token并跳转到登录页
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         if (router.currentRoute.path !== '/login') {

@@ -69,6 +69,21 @@ public class User implements Serializable {
     private String organization;
 
     /**
+     * 省份
+     */
+    private String province;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 详细地址
+     */
+    private String address;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createdAt;

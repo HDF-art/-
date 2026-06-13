@@ -1,9 +1,5 @@
 <template>
   <div class="login-container">
-    <div class="top-right-link">
-      <a href="/client.html" target="_blank">📱 APP下载</a>
-    </div>
-    
     <div class="dynamic-bg"></div>
     
     <div class="login-form-wrapper">
@@ -253,29 +249,6 @@ export default {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-.top-right-link {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-}
-
-.top-right-link a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  padding: 8px 16px;
-  background: rgba(0, 255, 200, 0.2);
-  border: 1px solid rgba(0, 255, 200, 0.4);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.top-right-link a:hover {
-  background: rgba(0, 255, 200, 0.3);
-  border-color: rgba(0, 255, 200, 0.6);
 }
 
 .login-form-wrapper {

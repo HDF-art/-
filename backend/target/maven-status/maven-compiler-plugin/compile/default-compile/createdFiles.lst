@@ -18,6 +18,7 @@ com/agri/controller/DataManagementController.class
 com/agri/mapper/UserMapper.class
 com/agri/service/impl/RecognitionRecordServiceImpl$1.class
 com/agri/model/User.class
+com/agri/controller/SystemMonitorController.class
 com/agri/service/impl/NotificationServiceImpl.class
 com/agri/service/impl/LocalDatasetServiceImpl.class
 com/agri/service/impl/EmailCodeServiceImpl.class

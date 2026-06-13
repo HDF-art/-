@@ -276,8 +276,16 @@
       
         <!-- 全局底部版权 -->
         <div class="global-footer">
-          <p>© 安徽农业大学 | 地址：安徽省合肥市长江西路130号 | 邮编：230036</p>
-          <p>技术支持：安徽省北斗精准农业信息工程研究中心 | 📧 邮箱：admpchina@yeah.net</p>
+          <div class="footer-toggle-btn" @click="showFooterInfo = !showFooterInfo">
+            <i :class="showFooterInfo ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
+            <span>{{ showFooterInfo ? '收起信息' : '显示信息' }}</span>
+          </div>
+          <transition name="footer-fade">
+            <div v-if="showFooterInfo" class="footer-info-content">
+              <p>© 安徽农业大学 | 地址：安徽省合肥市长江西路130号 | 邮编：230036</p>
+              <p>技术支持：安徽省北斗精准农业信息工程研究中心 | 📧 邮箱：admpchina@yeah.net</p>
+            </div>
+          </transition>
         </div>
       </el-main>
     </el-container>
@@ -301,7 +309,8 @@ export default {
       notifications: [],
       unreadCount: 0,
       notificationDialogVisible: false,
-      currentNotification: null
+      currentNotification: null,
+      showFooterInfo: false
     }
   },
   computed: {
@@ -742,6 +751,41 @@ export default {
 
 .global-footer p {
   margin: 4px 0;
+}
+
+.footer-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(0, 83, 155, 0.06);
+  color: #94A3B8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.footer-toggle-btn:hover {
+  background: rgba(0, 83, 155, 0.12);
+  color: #475569;
+}
+
+.footer-info-content {
+  margin-top: 8px;
+}
+
+.footer-fade-enter-active,
+.footer-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.footer-fade-enter,
+.footer-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
 

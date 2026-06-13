@@ -324,51 +324,20 @@ export default {
         return
       }
       
-      // 打印环境变量用于调试
-      console.log('环境变量检查:')
-      console.log('VUE_APP_DEEPSEEK_API_KEY:', process.env.VUE_APP_DEEPSEEK_API_KEY)
-      console.log('VUE_APP_DEEPSEEK_API_BASE_URL:', process.env.VUE_APP_DEEPSEEK_API_BASE_URL)
-      console.log('所有环境变量:', process.env)
-      
       this.analyzing = true
-      this.deepSeekAnalysis = null // 确保初始状态为null
+      this.deepSeekAnalysis = null
       
       try {
-        // 调用新的DeepSeek API进行深度分析
-        console.log('调用深度分析API，参数:', this.identifyResult)
-        
-        // 检查API密钥是否存在
-        const apiKey = process.env.VUE_APP_DEEPSEEK_API_KEY
-        console.log('API密钥是否存在:', !!apiKey)
-        if (!apiKey) {
-          throw new Error('API密钥未配置')
-        }
-        
-        // 先测试网络连接
-        try {
-          const testResponse = await fetch('https://httpbin.org/get')
-          console.log('网络测试响应:', testResponse.status)
-        } catch (testError) {
-          console.error('网络测试失败:', testError)
-        }
-        
         const analysisResult = await analyzeDiseaseResult(this.identifyResult)
         
-        // 记录API返回的结果
-        console.log('DeepSeek API分析结果:', analysisResult)
-        
-        // 处理分析结果
         if (analysisResult) {
-          // 保存原始分析结果
           this.deepSeekAnalysis = analysisResult
           this.$message.success('深度分析完成')
         } else {
-          console.error('API返回的分析结果为空')
           this.$message.error('深度分析调用失败：未返回分析结果')
         }
       } catch (error) {
         console.error('深度分析API调用失败:', error)
-        // 显示具体错误信息
         this.$message.error(`深度分析调用失败：${error.message || '未知错误'}`)
       } finally {
         this.analyzing = false

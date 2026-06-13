@@ -158,7 +158,7 @@ public class StatsController {
             List<User> allUsers = userService.list();
             long admin1Count = allUsers.stream().filter(u -> u.getRole() != null && u.getRole() == 1).count();
             long admin2Count = allUsers.stream().filter(u -> u.getRole() != null && u.getRole() == 2).count();
-            long userCount = allUsers.stream().filter(u -> u.getRole() == null || u.getRole() == 0).count();
+            long userCount = allUsers.stream().filter(u -> u.getRole() != null && (u.getRole() == 3 || u.getRole() == 0)).count();
 
             Map<String, Object> stats = new HashMap<>();
             stats.put("admin1Count", admin1Count);
@@ -188,6 +188,58 @@ public class StatsController {
             return ResponseUtils.success(stats);
         } catch (Exception e) {
             return ResponseUtils.error(500, "获取任务状态统计失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/farms")
+    public ResponseUtils.ApiResponse<Map<String, Object>> getFarmStats() {
+        try {
+            List<User> allUsers = userService.list();
+            List<User> admin2Users = allUsers.stream()
+                .filter(u -> u.getRole() != null && u.getRole() == 2 && u.getStatus() != null && u.getStatus() == 1)
+                .collect(Collectors.toList());
+
+            long totalFarms = admin2Users.size();
+            long activeFarms = admin2Users.stream()
+                .filter(u -> u.getAuditStatus() != null && u.getAuditStatus() == 1)
+                .count();
+
+            Map<String, Long> orgDistribution = admin2Users.stream()
+                .filter(u -> u.getOrganization() != null && !u.getOrganization().isEmpty())
+                .collect(Collectors.groupingBy(User::getOrganization, Collectors.counting()));
+
+            Map<String, Long> provinceDistribution = admin2Users.stream()
+                .filter(u -> u.getProvince() != null && !u.getProvince().isEmpty())
+                .collect(Collectors.groupingBy(User::getProvince, Collectors.counting()));
+
+            List<Map<String, Object>> farmList = new ArrayList<>();
+            for (User u : admin2Users) {
+                Map<String, Object> farm = new HashMap<>();
+                farm.put("id", u.getId());
+                farm.put("name", u.getOrganization() != null ? u.getOrganization() : u.getUsername());
+                farm.put("province", u.getProvince());
+                farm.put("city", u.getCity());
+                farm.put("address", u.getAddress());
+                farm.put("auditStatus", u.getAuditStatus());
+                farm.put("createdAt", u.getCreatedAt());
+
+                long memberCount = allUsers.stream()
+                    .filter(m -> m.getFarmId() != null && m.getFarmId().equals(u.getId()))
+                    .count();
+                farm.put("memberCount", memberCount);
+                farmList.add(farm);
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalFarms", totalFarms);
+            result.put("activeFarms", activeFarms);
+            result.put("orgDistribution", orgDistribution);
+            result.put("provinceDistribution", provinceDistribution);
+            result.put("farmList", farmList);
+
+            return ResponseUtils.success(result);
+        } catch (Exception e) {
+            return ResponseUtils.error(500, "获取农场统计失败: " + e.getMessage());
         }
     }
 }

@@ -638,3 +638,17 @@ export const getTaskParticipations = (userId) => {
     method: 'get'
   })
 }
+
+export const getSystemMonitor = () => {
+  return request({
+    url: '/system/monitor',
+    method: 'get'
+  })
+}
+
+export const getFarmStats = () => {
+  return request({
+    url: '/stats/farms',
+    method: 'get'
+  })
+}

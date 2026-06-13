@@ -174,6 +174,62 @@ def models():
         ]
     })
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'file' not in request.files:
+        return jsonify({'error': '未提供图像文件'}), 400
+    
+    image_file = request.files['file']
+    
+    is_valid, error_msg = validate_image_file(image_file)
+    if not is_valid:
+        return jsonify({'error': error_msg}), 400
+    
+    image_bytes = image_file.read()
+    result = classifier.classify(image_bytes)
+    
+    if result.get('success') and result.get('predictions'):
+        top = result['predictions'][0]
+        disease_name = top.get('class', '未知')
+        conf = top.get('confidence', 0.5)
+        
+        disease_map = {
+            'rice': '水稻健康', 'wheat': '小麦健康', 'corn': '玉米健康',
+            'barley': '大麦健康', 'oat': '燕麦健康',
+            'blight': '水稻稻瘟病', 'blast': '水稻纹枯病',
+            'rust': '小麦锈病', 'powdery_mildew': '白粉病',
+            'leaf_spot': '叶斑病', 'bacterial_leaf_blight': '细菌性叶枯病',
+            'brown_spot': '褐斑病', 'sheath_blight': '纹枯病',
+        }
+        
+        display_name = disease_map.get(disease_name.lower(), disease_name)
+        prevention_map = {
+            '水稻稻瘟病': '建议：选用抗病品种，合理施肥，发病初期喷施三环唑或稻瘟灵',
+            '水稻纹枯病': '建议：合理密植，适时晒田，发病初期喷施井冈霉素',
+            '小麦锈病': '建议：选用抗锈品种，适时播种，发病初期喷施粉锈宁',
+            '白粉病': '建议：增施磷钾肥，改善通风条件，喷施三唑酮',
+            '叶斑病': '建议：清除病残体，合理轮作，喷施多菌灵',
+            '细菌性叶枯病': '建议：选用无病种子，及时排水晒田，喷施农用链霉素',
+            '褐斑病': '建议：平衡施肥，避免偏施氮肥，喷施稻瘟灵',
+            '纹枯病': '建议：合理密植，适时晒田，喷施井冈霉素',
+        }
+        prevention = prevention_map.get(display_name, '建议：定期巡查，保持通风，合理施肥浇水')
+        
+        return jsonify({
+            'diseaseName': display_name,
+            'confidence': conf,
+            'prevention': prevention,
+            'success': True,
+            'model': result.get('model', 'unknown')
+        })
+    else:
+        return jsonify({
+            'diseaseName': '识别失败',
+            'confidence': 0.0,
+            'prevention': '请重新拍摄清晰的图片',
+            'success': False
+        })
+
 @app.route('/api/crop-disease', methods=['POST'])
 def crop_disease():
     if 'image' not in request.files:

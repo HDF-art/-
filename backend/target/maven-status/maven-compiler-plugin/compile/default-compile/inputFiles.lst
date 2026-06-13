@@ -78,6 +78,7 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/model/Model.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/SmsSenderServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/FarmService.java
+/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/SystemMonitorController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/TrainingTaskController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/AuditRequestController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/utils/FileUploadValidator.java

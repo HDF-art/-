@@ -52,12 +52,27 @@ class ImageClassifier:
             self.model = timm.create_model(self.model_name, pretrained=True, num_classes=1000)
             self.model.eval()
             
-            # 获取数据变换
             config = resolve_data_config({}, model=self.model)
             self.transform = create_transform(**config)
             
-            # 获取类别名称
-            self.class_names = timm.data.ImageNetInfo().labels
+            try:
+                data_cfg = timm.data.resolve_data_config({}, model=self.model)
+                dataset_info = timm.data.get_dataset_info(data_cfg.get('dataset', 'imagenet') if isinstance(data_cfg, dict) else 'imagenet')
+                self.class_names = dataset_info.get('label_names', None) if isinstance(dataset_info, dict) else None
+            except Exception:
+                self.class_names = None
+            
+            if self.class_names is None:
+                try:
+                    import json as _json
+                    _labels_url = 'https://storage.googleapis.com/download.tensorflow.org/data/imagenet_class_index.json'
+                    import urllib.request
+                    with urllib.request.urlopen(_labels_url, timeout=10) as resp:
+                        _idx = _json.loads(resp.read().decode())
+                        self.class_names = [_idx[str(i)][1] for i in range(1000)]
+                except Exception:
+                    self.class_names = [f"class_{i}" for i in range(1000)]
+            
             print(f"Model {self.model_name} loaded successfully")
         except Exception as e:
             print(f"Error loading model: {e}")

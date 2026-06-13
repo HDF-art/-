@@ -108,8 +108,7 @@
         <div class="section-content">
           <p>如果您在使用过程中遇到任何问题，请通过以下方式联系我们：</p>
           <ul>
-            <li>邮箱：support@agri-platform.com</li>
-            <li>电话：400-123-4567</li>
+            <li>邮箱：admpchina@yeah.net</li>
             <li>工作时间：周一至周五 9:00-18:00</li>
           </ul>
         </div>

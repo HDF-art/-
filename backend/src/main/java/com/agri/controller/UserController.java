@@ -154,6 +154,15 @@ public class UserController {
             if (userData.containsKey("organization")) {
                 user.setOrganization((String) userData.get("organization"));
             }
+            if (userData.containsKey("province")) {
+                user.setProvince((String) userData.get("province"));
+            }
+            if (userData.containsKey("city")) {
+                user.setCity((String) userData.get("city"));
+            }
+            if (userData.containsKey("address")) {
+                user.setAddress((String) userData.get("address"));
+            }
             if (userData.containsKey("status")) {
                 user.setStatus((Integer) userData.get("status"));
             }
@@ -212,6 +221,15 @@ public class UserController {
             }
             if (userData.containsKey("organization")) {
                 currentUser.setOrganization((String) userData.get("organization"));
+            }
+            if (userData.containsKey("province")) {
+                currentUser.setProvince((String) userData.get("province"));
+            }
+            if (userData.containsKey("city")) {
+                currentUser.setCity((String) userData.get("city"));
+            }
+            if (userData.containsKey("address")) {
+                currentUser.setAddress((String) userData.get("address"));
             }
             
             currentUser.setUpdatedAt(java.time.LocalDateTime.now());
@@ -497,6 +515,9 @@ public class UserController {
                 userMap.put("email", u.getEmail());
                 userMap.put("phone", u.getPhone());
                 userMap.put("organization", u.getOrganization());
+                userMap.put("province", u.getProvince());
+                userMap.put("city", u.getCity());
+                userMap.put("address", u.getAddress());
                 userMap.put("role", u.getRole());
                 userMap.put("roleName", RoleEnum.fromCode(u.getRole()).getDescription());
                 userMap.put("status", u.getStatus());

@@ -30,6 +30,20 @@
         <el-form-item label="手机号">
           <el-input v-model="userForm.phone" placeholder="请输入手机号"></el-input>
         </el-form-item>
+        <el-form-item label="单位名称" v-if="userForm.role === 2">
+          <el-input v-model="userForm.organization" placeholder="请输入单位名称"></el-input>
+        </el-form-item>
+        <el-form-item label="所在省份" v-if="userForm.role === 2">
+          <el-select v-model="userForm.province" placeholder="请选择省份" filterable @change="onProvinceChange" style="width: 100%;">
+            <el-option v-for="p in provinceList" :key="p" :label="p" :value="p"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所在城市" v-if="userForm.role === 2">
+          <el-input v-model="userForm.city" placeholder="请输入城市名称"></el-input>
+        </el-form-item>
+        <el-form-item label="详细地址" v-if="userForm.role === 2">
+          <el-input v-model="userForm.address" placeholder="请输入详细地址"></el-input>
+        </el-form-item>
         <el-form-item label="头像">
           <div style="display: flex; align-items: center;">
             <el-upload
@@ -78,9 +92,22 @@ export default {
         name: '',
         email: '',
         phone: '',
-        avatar: ''
+        avatar: '',
+        organization: '',
+        province: '',
+        city: '',
+        address: ''
       },
-      originalData: {}
+      originalData: {},
+      provinceList: [
+        '北京市', '天津市', '河北省', '山西省', '内蒙古自治区',
+        '辽宁省', '吉林省', '黑龙江省', '上海市', '江苏省',
+        '浙江省', '安徽省', '福建省', '江西省', '山东省',
+        '河南省', '湖北省', '湖南省', '广东省', '广西壮族自治区',
+        '海南省', '重庆市', '四川省', '贵州省', '云南省',
+        '西藏自治区', '陕西省', '甘肃省', '青海省', '宁夏回族自治区',
+        '新疆维吾尔自治区', '台湾省', '香港特别行政区', '澳门特别行政区'
+      ]
     }
   },
   computed: {
@@ -114,7 +141,11 @@ export default {
             name: user.name || '',
             email: user.email || '',
             phone: user.phone || '',
-            avatar: user.avatar || ''
+            avatar: user.avatar || '',
+            organization: user.organization || '',
+            province: user.province || '',
+            city: user.city || '',
+            address: user.address || ''
           }
           this.originalData = { ...this.userForm }
           
@@ -144,7 +175,11 @@ export default {
             name: user.name || '',
             email: user.email || '',
             phone: user.phone || '',
-            avatar: user.avatar || ''
+            avatar: user.avatar || '',
+            organization: user.organization || '',
+            province: user.province || '',
+            city: user.city || '',
+            address: user.address || ''
           }
           this.originalData = { ...this.userForm }
         } catch (e) {
@@ -227,6 +262,13 @@ export default {
           phone: this.userForm.phone
         }
         
+        if (this.userForm.role === 2) {
+          updateData.organization = this.userForm.organization
+          updateData.province = this.userForm.province
+          updateData.city = this.userForm.city
+          updateData.address = this.userForm.address
+        }
+        
         const res = await updateUserInfo(updateData)
         if (res && (res.code === 200 || res.success)) {
           this.$message.success('个人信息更新成功')
@@ -246,6 +288,10 @@ export default {
     handleCancel() {
       this.userForm = { ...this.originalData }
       this.$message.info('已取消修改')
+    },
+    
+    onProvinceChange() {
+      this.userForm.city = ''
     }
   }
 }
