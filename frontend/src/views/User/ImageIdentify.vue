@@ -99,7 +99,7 @@
               
               <div class="result-details">
                 <h4>详细信息</h4>
-                <el-table :data="identifyResult.details" style="width: 100%">
+                <el-table :data="(identifyResult.details || []).slice(0, 5)" style="width: 100%">
                   <el-table-column prop="diseaseName" label="病虫害名称" width="180"></el-table-column>
                   <el-table-column prop="confidence" label="置信度">
                     <template slot-scope="scope">

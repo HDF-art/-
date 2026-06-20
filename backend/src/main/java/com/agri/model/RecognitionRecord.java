@@ -23,4 +23,5 @@ public class RecognitionRecord implements Serializable {
     private LocalDateTime createdAt;
     private String preventionAdvice;
     private String cropType;
+    private String resultJson;
 }

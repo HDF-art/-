@@ -20,7 +20,7 @@ public class DatasetController {
     @Autowired
     private DatasetService datasetService;
 
-    @Value("${file.upload-dir:D:/agri-platform/upload/}")
+    @Value("${file.upload-dir:./upload/datasets}")
     private String uploadDirBase;
     
     private String getFileExtension(String filename) {
@@ -42,7 +42,7 @@ public class DatasetController {
     }
     
     private Path validateAndResolvePath(Long farmId, String filename) {
-        Path basePath = Paths.get(uploadDirBase, "datasets").toAbsolutePath().normalize();
+        Path basePath = Paths.get(uploadDirBase).toAbsolutePath().normalize();
         Path targetPath = basePath.resolve(farmId.toString()).resolve(filename).normalize();
         
         if (!targetPath.startsWith(basePath)) {

@@ -91,6 +91,7 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
             String disease = "未知";
             String prevention = "请稍后再试";
             double confidence = 0.5;
+            String detailsJson = null;
             
             if (result != null && result.contains("diseaseName")) {
                 try {
@@ -102,10 +103,19 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
                     if (json.has("confidence")) {
                         confidence = json.get("confidence").asDouble();
                     }
+                    if (json.has("prevention") && !json.get("prevention").asText().isEmpty()) {
+                        prevention = json.get("prevention").asText();
+                    }
+                    if (json.has("details")) {
+                        detailsJson = json.get("details").toString();
+                    }
                 } catch (Exception e) {
                     System.out.println("解析ML服务结果失败: " + e.getMessage());
                 }
             }
+            
+            // 根据病虫害名称生成防治建议
+            prevention = getPreventionAdvice(disease);
             
             RecognitionRecord record = new RecognitionRecord();
             record.setUserId(userId);
@@ -115,6 +125,7 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
             record.setConfidence(BigDecimal.valueOf(confidence));
             record.setCropType(cropType);
             record.setPreventionAdvice(prevention);
+            record.setResultJson(detailsJson);
             record.setCreatedAt(LocalDateTime.now());
             
             recognitionRecordMapper.insert(record);
@@ -157,5 +168,29 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
         } else {
             return "1. 加强田间管理 2. 合理施肥浇水 3. 及时清除病残体 4. 必要时咨询当地农技部门";
         }
+    }
+    
+    private String getPreventionAdvice(String disease) {
+        if (disease == null || disease.isEmpty()) {
+            return "请咨询当地农技部门获取防治建议";
+        }
+        // 昆虫类害虫
+        if (disease.contains("稻象甲")) return "1. 田间深水灌溉抑制幼虫 2. 使用氯虫苯甲酰胺喷雾防治 3. 清除田间杂草减少越冬场所 4. 灯光诱杀成虫";
+        if (disease.contains("飞虱")) return "1. 选用抗虫品种 2. 合理施肥避免偏施氮肥 3. 使用吡蚜酮或烯啶虫胺防治 4. 保护利用天敌如蜘蛛和黑肩绿盲蝽";
+        if (disease.contains("叶蝉")) return "1. 选用抗虫品种 2. 清除田边杂草 3. 使用吡虫啉或噻虫嗪喷雾 4. 利用灯光诱杀";
+        if (disease.contains("管蓟马")) return "1. 清除田间残株和杂草 2. 蓝板诱杀成虫 3. 使用多杀霉素或乙基多杀菌素防治 4. 适时播种避开高峰期";
+        if (disease.contains("瘿蚊")) return "1. 选用抗虫品种 2. 适时晒田抑制幼虫 3. 使用氯虫苯甲酰胺防治 4. 保护利用天敌";
+        if (disease.contains("弄蝶")) return "1. 人工摘除虫苞 2. 使用甲维盐或氯虫苯甲酰胺喷雾 3. 保护利用赤眼蜂等天敌 4. 灯光诱杀成虫";
+        if (disease.contains("草螟")) return "1. 清除田边杂草减少产卵场所 2. 使用氯虫苯甲酰胺或甲维盐防治 3. 灯光诱杀成虫 4. 适时晒田";
+        if (disease.contains("秆蝇")) return "1. 适时早播避开产卵高峰 2. 使用吡虫啉拌种 3. 清除田间残株 4. 保护利用天敌";
+        if (disease.contains("水蝇")) return "1. 保持田间适当水层 2. 使用敌百虫或毒死蜱防治 3. 清除受害茎秆 4. 合理施肥促进植株健壮";
+        if (disease.contains("夜蛾")) return "1. 灯光诱杀成虫 2. 使用氯虫苯甲酰胺或甲维盐喷雾 3. 性诱剂诱杀雄虫 4. 保护利用天敌";
+        if (disease.contains("蓟马")) return "1. 蓝板诱杀成虫 2. 使用多杀霉素或乙基多杀菌素防治 3. 清除田间杂草 4. 适时播种避开高峰期";
+        // 病害类
+        if (disease.contains("白叶枯")) return "1. 选用抗病品种 2. 及时排水晒田 3. 发病初期喷施噻唑锌或叶枯唑 4. 避免偏施氮肥";
+        if (disease.contains("稻瘟病")) return "1. 选用抗病品种 2. 合理施肥避免偏施氮肥 3. 发病初期喷施三环唑或稻瘟灵 4. 收获后清除病残体";
+        if (disease.contains("褐斑病")) return "1. 选用抗病品种 2. 平衡施肥避免偏施氮肥 3. 发病初期喷施稻瘟灵或咪鲜胺 4. 及时排水晒田";
+        if (disease.contains("东格鲁")) return "1. 选用抗病品种 2. 防治传毒介体叶蝉和飞虱 3. 使用吡虫啉或噻虫嗪防治传毒昆虫 4. 及时拔除病株";
+        return "1. 加强田间管理 2. 合理施肥浇水 3. 及时清除病残体 4. 必要时咨询当地农技部门";
     }
 }

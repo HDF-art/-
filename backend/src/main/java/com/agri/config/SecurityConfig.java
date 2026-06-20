@@ -47,6 +47,7 @@ public class SecurityConfig {
                     "/system/**",
                     "/stats/**",
                     "/recognition-records/**",
+                    "/datasets/**",
                     "/swagger-resources/**",
                     "/swagger-ui.html",
                     "/v2/api-docs",

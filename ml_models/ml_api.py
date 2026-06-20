@@ -190,37 +190,65 @@ def predict():
     
     if result.get('success') and result.get('predictions'):
         top = result['predictions'][0]
-        disease_name = top.get('class', '未知')
+        raw_class = top.get('class', '未知')
         conf = top.get('confidence', 0.5)
         
-        disease_map = {
-            'rice': '水稻健康', 'wheat': '小麦健康', 'corn': '玉米健康',
-            'barley': '大麦健康', 'oat': '燕麦健康',
-            'blight': '水稻稻瘟病', 'blast': '水稻纹枯病',
-            'rust': '小麦锈病', 'powdery_mildew': '白粉病',
-            'leaf_spot': '叶斑病', 'bacterial_leaf_blight': '细菌性叶枯病',
-            'brown_spot': '褐斑病', 'sheath_blight': '纹枯病',
+        # ImageNet常见类名中文翻译（覆盖农业相关和常见类别）
+        imagenet_cn = {
+            # 农作物
+            'rice': '水稻', 'corn': '玉米', 'wheat': '小麦', 'barley': '大麦',
+            'oat': '燕麦', 'sorghum': '高粱', 'soybean': '大豆',
+            # 常见植物/花卉
+            'daisy': '雏菊', 'rose': '玫瑰', 'sunflower': '向日葵',
+            'dandelion': '蒲公英', 'tulip': '郁金香', 'lotus': '莲花',
+            'banana': '香蕉', 'orange': '橙子', 'lemon': '柠檬',
+            'apple': '苹果', 'pineapple': '菠萝', 'strawberry': '草莓',
+            'fig': '无花果', 'pomegranate': '石榴', 'coconut': '椰子',
+            # 昆虫（农业害虫）
+            'damselfly': '豆娘（益虫）', 'dragonfly': '蜻蜓（益虫）',
+            'bee': '蜜蜂（益虫）', 'ant': '蚂蚁', 'grasshopper': '蝗虫（害虫）',
+            'beetle': '甲虫', 'ladybug': '瓢虫', 'butterfly': '蝴蝶',
+            'moth': '飞蛾', 'cockroach': '蟑螂', 'mantis': '螳螂',
+            'cicada': '蝉', 'fly': '苍蝇', 'mosquito': '蚊子',
+            'aphid': '蚜虫（害虫）', 'weevil': '象甲（害虫）',
+            'caterpillar': '毛虫（害虫）', 'worm': '蠕虫',
+            # 叶片/植物部位
+            'leaf': '叶片', 'leafhopper': '叶蝉（害虫）',
+            # 其他常见
+            'spider': '蜘蛛', 'snail': '蜗牛', 'slug': '蛞蝓',
+            'frog': '青蛙', 'toad': '蟾蜍', 'lizard': '蜥蜴',
+            'bird': '鸟类', 'hen': '母鸡', 'rooster': '公鸡',
+            'dog': '犬', 'cat': '猫',
         }
         
-        display_name = disease_map.get(disease_name.lower(), disease_name)
-        prevention_map = {
-            '水稻稻瘟病': '建议：选用抗病品种，合理施肥，发病初期喷施三环唑或稻瘟灵',
-            '水稻纹枯病': '建议：合理密植，适时晒田，发病初期喷施井冈霉素',
-            '小麦锈病': '建议：选用抗锈品种，适时播种，发病初期喷施粉锈宁',
-            '白粉病': '建议：增施磷钾肥，改善通风条件，喷施三唑酮',
-            '叶斑病': '建议：清除病残体，合理轮作，喷施多菌灵',
-            '细菌性叶枯病': '建议：选用无病种子，及时排水晒田，喷施农用链霉素',
-            '褐斑病': '建议：平衡施肥，避免偏施氮肥，喷施稻瘟灵',
-            '纹枯病': '建议：合理密植，适时晒田，喷施井冈霉素',
-        }
-        prevention = prevention_map.get(display_name, '建议：定期巡查，保持通风，合理施肥浇水')
+        display_name = imagenet_cn.get(raw_class.lower(), raw_class)
+        
+        # 根据置信度判断结果可信度
+        if conf < 0.1:
+            display_name = '无法识别（图像可能不清晰或非农业相关）'
+            prevention = '建议：请拍摄清晰的农作物或病虫害图片重新识别'
+        elif conf < 0.3:
+            prevention = '注意：识别置信度较低，结果仅供参考。建议拍摄更清晰的特写图片'
+        else:
+            prevention = '建议：定期巡查田间，保持通风，合理施肥浇水。如需精准诊断，请咨询当地农技部门'
+        
+        # 构建Top-5详细信息
+        details = []
+        for pred in result['predictions'][:5]:
+            pred_class = pred.get('class', '未知')
+            pred_cn = imagenet_cn.get(pred_class.lower(), pred_class)
+            details.append({
+                'diseaseName': pred_cn,
+                'confidence': round(pred.get('confidence', 0), 4)
+            })
         
         return jsonify({
             'diseaseName': display_name,
             'confidence': conf,
             'prevention': prevention,
             'success': True,
-            'model': result.get('model', 'unknown')
+            'model': result.get('model', 'unknown'),
+            'details': details
         })
     else:
         return jsonify({

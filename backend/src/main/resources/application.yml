@@ -51,7 +51,11 @@ model:
 upload:
   image-path: ${UPLOAD_IMAGE_PATH:./upload/images}
   model-path: ${UPLOAD_MODEL_PATH:./upload/models}
+  dataset-path: ${UPLOAD_DATASET_PATH:./upload/datasets}
   max-size: 1073741824
+
+file:
+  upload-dir: ${UPLOAD_DATASET_PATH:./upload/datasets}
 
 logging:
   level:
