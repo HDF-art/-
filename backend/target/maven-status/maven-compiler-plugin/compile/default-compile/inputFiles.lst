@@ -28,7 +28,6 @@
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/mapper/DataCirculationMapper.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/UserServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/AIProxyController.java
-/home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/FLGoStatusController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/service/impl/LocalClientServiceImpl.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/DataTransactionController.java
 /home/ubuntu/农业大数据联合建模平台/backend/src/main/java/com/agri/controller/EmailController.java

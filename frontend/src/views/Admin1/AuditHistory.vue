@@ -31,8 +31,8 @@
         </el-table-column>
         <el-table-column label="账号状态" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '已启用' : '已禁用' }}
+            <el-tag :type="getAccountStatusType(scope.row)">
+              {{ getAccountStatusText(scope.row) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -85,6 +85,16 @@ export default {
         case 2: return '已拒绝'
         default: return '未知'
       }
+    },
+    getAccountStatusType(row) {
+      if (row.auditStatus === 1) return 'success'
+      if (row.auditStatus === 2) return 'danger'
+      return row.status === 1 ? 'success' : 'danger'
+    },
+    getAccountStatusText(row) {
+      if (row.auditStatus === 1) return '已启用'
+      if (row.auditStatus === 2) return '已禁用'
+      return row.status === 1 ? '已启用' : '已禁用'
     },
     formatDate(dateStr) {
       if (!dateStr) return '-'

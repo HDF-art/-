@@ -2,7 +2,7 @@
   <div class="settings-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span class="card-title">👤 个人信息</span>
+        <span class="card-title">个人信息</span>
       </div>
       
       <el-form :model="profileForm" label-width="100px" class="profile-form" v-loading="profileLoading">
@@ -29,7 +29,7 @@
     
     <el-card class="box-card" style="margin-top: 20px;">
       <div slot="header" class="clearfix">
-        <span class="card-title">ℹ️ 系统信息</span>
+        <span class="card-title">系统信息</span>
       </div>
       
       <el-descriptions :column="2" border>

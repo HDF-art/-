@@ -46,6 +46,30 @@ public class ModelController {
     }
 
     /**
+     * 按任务类型获取模型列表
+     * @param taskType 任务类型（pest_disease、strawberry_ripeness、env_prediction）
+     * @return 模型列表
+     */
+    @GetMapping("/task-type/{taskType}")
+    public List<Model> getModelsByTaskType(@PathVariable String taskType) {
+        return modelService.list(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Model>()
+            .eq("task_type", taskType)
+            .orderByDesc("is_default")
+            .orderByDesc("created_at"));
+    }
+
+    /**
+     * 获取所有模型（不分页）
+     * @return 模型列表
+     */
+    @GetMapping("/all")
+    public List<Model> getAllModels() {
+        return modelService.list(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<Model>()
+            .orderByDesc("is_default")
+            .orderByDesc("created_at"));
+    }
+
+    /**
      * 获取农场的个性化模型
      * @param farmId 农场ID
      * @return 模型列表

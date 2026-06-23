@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/data")
+@RequestMapping("/data")
 @CrossOrigin
 public class DataManagementController {
     
@@ -64,11 +64,17 @@ public class DataManagementController {
     @PostMapping("/upload")
     public Map<String, Object> upload(@RequestParam("file") MultipartFile file,
             @RequestParam("userId") String userId,
-            @RequestParam(value = "description", required = false) String description) {
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "type", required = false, defaultValue = "data") String type) {
         Map<String, Object> result = new HashMap<>();
         
         try {
-            FileUploadValidator.ValidationResult validationResult = fileUploadValidator.validateDataFile(file);
+            FileUploadValidator.ValidationResult validationResult;
+            if ("model".equals(type)) {
+                validationResult = fileUploadValidator.validateModelFile(file);
+            } else {
+                validationResult = fileUploadValidator.validateDataFile(file);
+            }
             if (!validationResult.isValid()) {
                 result.put("success", false);
                 result.put("message", validationResult.getErrorMessage());
@@ -188,6 +194,64 @@ public class DataManagementController {
             logger.error("文件下载失败: {}", e.getMessage());
             response.setStatus(500);
         }
+    }
+
+    /**
+     * 获取用户上传的Excel文件列表
+     * @param userId 用户ID
+     * @return Excel文件列表
+     */
+    @GetMapping("/excel-list")
+    public Map<String, Object> excelList(@RequestParam String userId) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            Path targetDir;
+            if (userId != null && !userId.isEmpty()) {
+                targetDir = validateUserDirectory(userId);
+            } else {
+                targetDir = UPLOAD_DIR;
+            }
+            
+            if (!targetDir.startsWith(UPLOAD_DIR)) {
+                result.put("success", false);
+                result.put("message", "访问被拒绝");
+                return result;
+            }
+            
+            List<Map<String, Object>> files = new ArrayList<>();
+            
+            if (Files.exists(targetDir) && Files.isDirectory(targetDir)) {
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetDir)) {
+                    for (Path filePath : stream) {
+                        if (Files.isRegularFile(filePath)) {
+                            String fileName = filePath.getFileName().toString();
+                            String lowerName = fileName.toLowerCase();
+                            if (lowerName.endsWith(".xlsx") || lowerName.endsWith(".xls")) {
+                                Map<String, Object> fileInfo = new HashMap<>();
+                                fileInfo.put("filename", fileName);
+                                fileInfo.put("size", Files.size(filePath));
+                                fileInfo.put("createdAt", new Date(Files.getLastModifiedTime(filePath).toMillis()));
+                                files.add(fileInfo);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            result.put("success", true);
+            result.put("files", files);
+        } catch (SecurityException e) {
+            logger.warn("安全违规: {}", e.getMessage());
+            result.put("success", false);
+            result.put("message", "访问被拒绝");
+        } catch (Exception e) {
+            logger.error("获取Excel文件列表失败: {}", e.getMessage());
+            result.put("success", false);
+            result.put("message", "获取Excel文件列表失败");
+        }
+        
+        return result;
     }
     
     @DeleteMapping("/delete")

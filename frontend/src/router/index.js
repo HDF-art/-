@@ -126,7 +126,7 @@ const routes = [
         path: 'user/image-identify',
         name: 'ImageIdentify',
         component: () => import('../views/User/ImageIdentify.vue'),
-        meta: { title: '图像识别' }
+        meta: { title: '推理任务' }
       },
       {
         path: 'admin1/data/data-collection',
@@ -168,7 +168,7 @@ const routes = [
         path: 'user/history-record',
         name: 'HistoryRecord',
         component: () => import('../views/User/HistoryRecord.vue'),
-        meta: { title: '识别记录' }
+        meta: { title: '调用记录' }
       },
       {
         path: 'user/profile',

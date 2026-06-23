@@ -54,7 +54,7 @@ module.exports = {
         '@': require('path').resolve(__dirname, 'src')
       }
     },
-    plugins: [
+    plugins: process.env.NODE_ENV === 'production' ? [
       new CompressionWebpackPlugin({
         filename: '[path][base].gz',
         algorithm: 'gzip',
@@ -62,7 +62,7 @@ module.exports = {
         threshold: 10240,
         minRatio: 0.8
       })
-    ]
+    ] : []
   },
   
   // 链式webpack配置

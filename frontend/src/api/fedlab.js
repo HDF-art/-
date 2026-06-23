@@ -77,3 +77,11 @@ export const downloadScript = (taskId, clientIp) => {
     method: 'get'
   })
 }
+
+// 删除 FedLab 任务
+export const deleteTask = (taskId) => {
+  return request({
+    url: `/fedlab/task/${taskId}`,
+    method: 'delete'
+  })
+}

@@ -7,7 +7,14 @@ import com.agri.utils.ResponseUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -23,9 +30,14 @@ public class RecognitionRecordController {
 
     @Autowired
     private RecognitionRecordService recognitionRecordService;
-    
+
     @Autowired
     private FileUploadValidator fileUploadValidator;
+
+    @Value("${model.service.base-url:http://localhost:5000}")
+    private String modelServiceBaseUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     /**
      * 根据ID获取识别记录
@@ -130,7 +142,7 @@ public class RecognitionRecordController {
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteRecord(@PathVariable("id") Long recordId) {
         boolean success = recognitionRecordService.removeById(recordId);
-        
+
         // 构造统一的响应格式
         Map<String, Object> response = new HashMap<>();
         if (success) {
@@ -142,8 +154,95 @@ public class RecognitionRecordController {
             response.put("message", "删除失败");
             response.put("data", false);
         }
-        
+
         return response;
+    }
+
+    /**
+     * 环境预测 - 代理调用模型服务的 /predict/env 端点
+     * @param body 包含 history 字段的请求体
+     * @return 预测结果
+     */
+    @PostMapping("/predict-env")
+    public Map<String, Object> predictEnv(@RequestBody Map<String, Object> body) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<Map> resp = restTemplate.exchange(
+                    modelServiceBaseUrl + "/predict/env",
+                    HttpMethod.POST, entity, Map.class);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "环境预测成功");
+            response.put("data", resp.getBody());
+            return response;
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 500);
+            response.put("message", "环境预测失败: " + e.getMessage());
+            return response;
+        }
+    }
+
+    /**
+     * 获取环境预测模型信息 - 代理调用模型服务的 /env/info 端点
+     * @return 模型信息
+     */
+    @GetMapping("/env-info")
+    public Map<String, Object> getEnvInfo() {
+        try {
+            ResponseEntity<Map> resp = restTemplate.getForEntity(
+                    modelServiceBaseUrl + "/env/info", Map.class);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "获取环境预测模型信息成功");
+            response.put("data", resp.getBody());
+            return response;
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 500);
+            response.put("message", "获取环境预测模型信息失败: " + e.getMessage());
+            return response;
+        }
+    }
+
+    /**
+     * 解析Excel文件 - 代理调用模型服务的 /env/parse-excel 端点
+     * @param file Excel文件
+     * @return 解析后的时间序列数据
+     */
+    @PostMapping("/parse-env-excel")
+    public Map<String, Object> parseEnvExcel(@RequestParam("file") MultipartFile file) {
+        try {
+            org.springframework.util.LinkedMultiValueMap<String, Object> body =
+                    new org.springframework.util.LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            HttpEntity<org.springframework.util.LinkedMultiValueMap<String, Object>> entity =
+                    new HttpEntity<>(body, headers);
+
+            ResponseEntity<Map> resp = restTemplate.exchange(
+                    modelServiceBaseUrl + "/env/parse-excel",
+                    HttpMethod.POST, entity, Map.class);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "Excel解析成功");
+            response.put("data", resp.getBody());
+            return response;
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 500);
+            response.put("message", "Excel解析失败: " + e.getMessage());
+            return response;
+        }
     }
 
 }

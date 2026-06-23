@@ -18,6 +18,18 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="taskType" label="任务类型" width="140">
+          <template slot-scope="scope">
+            <el-tag :type="getTaskTagType(scope.row.taskType)" size="small">
+              {{ getTaskText(scope.row.taskType) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="inputType" label="输入类型" width="100">
+          <template slot-scope="scope">
+            {{ getInputText(scope.row.inputType) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="accuracy" label="准确率" width="100">
           <template slot-scope="scope">
             {{ scope.row.accuracy ? (scope.row.accuracy * 100).toFixed(2) + '%' : '-' }}
@@ -70,12 +82,13 @@
 </template>
 
 <script>
-import { getModelList } from '@/api/user'
+import { getAllModels } from '@/api/user'
 
 export default {
   name: 'ModelList',
   data() {
     return {
+      allModels: [],
       modelList: [],
       loading: false,
       currentPage: 1,
@@ -90,29 +103,56 @@ export default {
     async loadModels() {
       this.loading = true
       try {
-        const res = await getModelList({ page: this.currentPage, pageSize: this.pageSize })
-        if (res && res.data) {
-          this.modelList = res.data.records || res.data || []
-          this.total = res.data.total || this.modelList.length
-        }
+        const res = await getAllModels()
+        const data = res.data || res || []
+        this.allModels = Array.isArray(data) ? data : []
+        this.total = this.allModels.length
+        this.applyPagination()
       } catch (e) {
         console.error('加载模型列表失败', e)
+        this.allModels = []
         this.modelList = []
+        this.total = 0
       } finally {
         this.loading = false
       }
     },
+    applyPagination() {
+      const start = (this.currentPage - 1) * this.pageSize
+      this.modelList = this.allModels.slice(start, start + this.pageSize)
+    },
     handleSizeChange(val) {
       this.pageSize = val
-      this.loadModels()
+      this.currentPage = 1
+      this.applyPagination()
     },
     handlePageChange(val) {
       this.currentPage = val
-      this.loadModels()
+      this.applyPagination()
     },
     formatTime(time) {
       if (!time) return '-'
       return new Date(time).toLocaleString('zh-CN')
+    },
+    getTaskText(taskType) {
+      const map = {
+        pest_disease: '病虫害识别',
+        strawberry_ripeness: '草莓成熟度检测',
+        env_prediction: '环境预测'
+      }
+      return map[taskType] || taskType || '-'
+    },
+    getTaskTagType(taskType) {
+      const map = {
+        pest_disease: 'danger',
+        strawberry_ripeness: 'warning',
+        env_prediction: 'primary'
+      }
+      return map[taskType] || 'info'
+    },
+    getInputText(inputType) {
+      const map = { image: '图片', time_series: '时间序列' }
+      return map[inputType] || inputType || '-'
     }
   }
 }

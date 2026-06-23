@@ -40,6 +40,9 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
     
     @Value("${model.service.url}")
     private String modelServiceUrl;
+    
+    @Value("${model.service.base-url:http://localhost:5000}")
+    private String modelServiceBaseUrl;
 
     @Override
     @Transactional
@@ -69,6 +72,22 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
         try {
             RestTemplate restTemplate = new RestTemplate();
             
+            // 根据模型任务类型选择推理端点
+            String endpointUrl = modelServiceUrl; // 默认病虫害识别端点
+            String modelTaskType = taskType;
+            if (modelId != null) {
+                Model model = modelMapper.selectById(modelId);
+                if (model != null && model.getTaskType() != null) {
+                    modelTaskType = model.getTaskType();
+                    if ("strawberry_ripeness".equals(modelTaskType)) {
+                        endpointUrl = modelServiceBaseUrl + "/predict/strawberry";
+                    } else if ("env_prediction".equals(modelTaskType)) {
+                        // 环境预测是时间序列输入，不走图片识别流程
+                        throw new RuntimeException("环境预测模型不支持图片识别，请使用环境预测接口");
+                    }
+                }
+            }
+            
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             
@@ -82,8 +101,9 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
             
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
+            System.out.println("调用推理端点: " + endpointUrl + " (taskType=" + modelTaskType + ")");
             ResponseEntity<String> response = restTemplate.postForEntity(
-                modelServiceUrl, requestEntity, String.class);
+                endpointUrl, requestEntity, String.class);
             
             System.out.println("ML服务返回: " + response.getBody());
             
@@ -191,6 +211,10 @@ public class RecognitionRecordServiceImpl extends ServiceImpl<RecognitionRecordM
         if (disease.contains("稻瘟病")) return "1. 选用抗病品种 2. 合理施肥避免偏施氮肥 3. 发病初期喷施三环唑或稻瘟灵 4. 收获后清除病残体";
         if (disease.contains("褐斑病")) return "1. 选用抗病品种 2. 平衡施肥避免偏施氮肥 3. 发病初期喷施稻瘟灵或咪鲜胺 4. 及时排水晒田";
         if (disease.contains("东格鲁")) return "1. 选用抗病品种 2. 防治传毒介体叶蝉和飞虱 3. 使用吡虫啉或噻虫嗪防治传毒昆虫 4. 及时拔除病株";
+        // 草莓成熟度检测相关
+        if (disease.contains("未成熟")) return "1. 草莓尚未成熟，建议继续观察 2. 保持适宜温度（15-25℃）和湿度 3. 待果实颜色转红后再采摘 4. 避免过早采摘影响口感";
+        if (disease.contains("成熟")) return "1. 草莓已达最佳采摘期 2. 建议尽快采摘以保持最佳风味 3. 采摘后冷藏保存（0-4℃） 4. 运输过程避免挤压";
+        if (disease.contains("过熟")) return "1. 草莓已过熟，建议尽快处理 2. 可用于制作果酱或加工产品 3. 避免长期储存 4. 及时采摘以免影响其他果实";
         return "1. 加强田间管理 2. 合理施肥浇水 3. 及时清除病残体 4. 必要时咨询当地农技部门";
     }
 }

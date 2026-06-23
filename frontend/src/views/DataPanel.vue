@@ -208,7 +208,17 @@
               <span>最近识别记录</span>
             </div>
             <div class="panel-body">
-              <div id="userRecentRecordChart" style="height: 280px;"></div>
+              <div id="userRecentRecordChart" style="height: 250px;"></div>
+              <div class="memory-realtime-info">
+                <div class="memory-stat">
+                  <span class="memory-label">识别总数</span>
+                  <span class="memory-value">{{ userRecordCount }}</span>
+                </div>
+                <div class="memory-stat">
+                  <span class="memory-label">本月新增</span>
+                  <span class="memory-value">{{ userMonthRecordCount }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -285,6 +295,8 @@ export default {
       farmStatsData: null,
       modelList: [],
       userRecords: [],
+      userRecordCount: 0,
+      userMonthRecordCount: 0,
       memoryTimer: null,
       networkTimer: null,
       dataRefreshTimer: null,
@@ -535,6 +547,13 @@ export default {
         if (res && res.data) {
           const pageData = res.data
           this.userRecords = pageData.records || pageData.list || (Array.isArray(pageData) ? pageData : [])
+          this.userRecordCount = this.userRecords.length
+          const now = new Date()
+          this.userMonthRecordCount = this.userRecords.filter(r => {
+            if (!r.createdAt) return false
+            const d = new Date(r.createdAt)
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
+          }).length
         }
       } catch (e) {
         console.error('加载用户记录失败', e)

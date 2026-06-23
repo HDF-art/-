@@ -160,7 +160,22 @@ public class TrainingTaskServiceImpl extends ServiceImpl<TrainingTaskMapper, Tra
                 System.out.println("[FedLab] " + line);
             }
 
-            return true;
+            int exitCode = process.waitFor();
+            System.out.println("[FedLab] 进程退出码: " + exitCode);
+
+            // 更新任务状态
+            TrainingTask updatedTask = getById(taskId);
+            if (updatedTask != null && "RUNNING".equals(updatedTask.getStatus())) {
+                if (exitCode == 0) {
+                    updatedTask.setStatus("COMPLETED");
+                } else {
+                    updatedTask.setStatus("FAILED");
+                }
+                updatedTask.setEndTime(LocalDateTime.now());
+                updateById(updatedTask);
+            }
+
+            return exitCode == 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

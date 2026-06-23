@@ -81,4 +81,14 @@ public class Model implements Serializable {
      */
     private Integer isDefault;
 
+    /**
+     * 任务类型（pest_disease 病虫害识别、strawberry_ripeness 草莓成熟度检测、env_prediction 环境预测）
+     */
+    private String taskType;
+
+    /**
+     * 输入类型（image 图片、time_series 时间序列）
+     */
+    private String inputType;
+
 }

@@ -13,14 +13,14 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/agri_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
   
   mail:
     host: smtp.yeah.net
     port: 465
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:placeholder@yeah.net}
+    password: ${MAIL_PASSWORD:placeholder}
     properties:
       mail:
         smtp:
@@ -31,7 +31,7 @@ spring:
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD}
+    password: ${REDIS_PASSWORD:}
     database: 0
   
   servlet:
@@ -40,12 +40,13 @@ spring:
       max-request-size: 1024MB
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:agri-platform-jwt-secret-key-2024}
   expiration: ${JWT_EXPIRATION:86400000}
 
 model:
   service:
     url: ${MODEL_SERVICE_URL:http://localhost:5000/predict}
+    base-url: ${MODEL_SERVICE_BASE_URL:http://localhost:5000}
   save-path: ${MODEL_SAVE_PATH:./models}
 
 upload:
@@ -61,8 +62,12 @@ logging:
   level:
     com.agri: info
 
+fedlab:
+  script:
+    path: ${FEDLAB_SCRIPT_PATH:/home/ubuntu/农业大数据联合建模平台/models/fedlab_server_runner.py}
+
 z-ai:
-  api-key: ${ZAI_API_KEY}
+  api-key: ${ZAI_API_KEY:}
   model: ${ZAI_MODEL:glm-5.1}
   url: ${ZAI_URL:https://open.bigmodel.cn/api/paas/v4/chat/completions}
 

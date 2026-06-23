@@ -1,7 +1,0 @@
-path: D:\system\Desktop\计设任务\YOLOv8-SP\草莓成熟度检测数据集_det
-train: train/images
-val: test/images
-test: test/images
-
-nc: 3
-names: ['unripe', 'ripe', 'overripe']

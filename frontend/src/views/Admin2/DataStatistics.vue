@@ -136,4 +136,11 @@ export default {
 .charts-container { display: flex; gap: 20px; }
 .chart-card { flex: 1; }
 .chart-header { font-size: 14px; font-weight: bold; padding: 10px 0; }
+@media (max-width: 992px) {
+  .statistics-cards, .charts-container { flex-wrap: wrap; }
+  .stat-card, .chart-card { min-width: calc(50% - 10px); }
+}
+@media (max-width: 768px) {
+  .stat-card, .chart-card { min-width: 100%; }
+}
 </style>

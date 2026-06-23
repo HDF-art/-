@@ -653,7 +653,7 @@ export default {
         this.$message.error('停止训练失败: ' + e.message)
       }
     },
-    viewTrainingLog(task) {
+    viewTrainingLog(/* task */) {
       this.$message.info('查看训练日志功能开发中')
     },
     previewDataset(dataset) {

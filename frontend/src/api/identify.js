@@ -108,5 +108,50 @@ export const deleteIdentifyRecord = (recordId) => {
   })
 }
 
+// 环境预测 - 调用后端代理接口
+export const predictEnv = (history) => {
+  return request({
+    url: '/recognition-records/predict-env',
+    method: 'post',
+    data: { history },
+    timeout: 30000
+  })
+}
+
+// 获取环境预测模型信息
+export const getEnvModelInfo = () => {
+  return request({
+    url: '/recognition-records/env-info',
+    method: 'get'
+  })
+}
+
+// 解析Excel文件为时间序列数据
+export const parseEnvExcel = (formData) => {
+  return request({
+    url: '/recognition-records/parse-env-excel',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    timeout: 60000
+  })
+}
+
+// 获取用户上传的Excel文件列表
+export const getExcelList = (userId) => {
+  return request({
+    url: '/data/excel-list',
+    method: 'get',
+    params: { userId }
+  })
+}
+
+// 下载用户上传的文件（返回文件URL）
+export const getFileUrl = (filename, userId) => {
+  return `/api/data/download?filename=${encodeURIComponent(filename)}&userId=${userId}`
+}
+
 // 注意：后端暂未提供批量删除、导出和统计功能的直接接口
 // 如需这些功能，可能需要在前端实现或等待后端更新

@@ -569,6 +569,20 @@ export const getModelList = (params) => {
   })
 }
 
+export const getAllModels = () => {
+  return request({
+    url: '/models/all',
+    method: 'get'
+  })
+}
+
+export const getModelsByTaskType = (taskType) => {
+  return request({
+    url: `/models/task-type/${taskType}`,
+    method: 'get'
+  })
+}
+
 export const getTaskList = () => {
   return request({
     url: '/flgo/tasks',

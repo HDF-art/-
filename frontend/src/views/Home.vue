@@ -196,8 +196,10 @@
                 <i class="el-icon-s-flag menu-icon"></i>
                 <span>训练管理</span>
               </template>
+              <el-menu-item index="/home/fedlab-center">
+                <span>FedLab 联邦学习</span>
+              </el-menu-item>
               <el-menu-item index="/home/federated-learning">
-                <i class="el-icon-s-marketing menu-icon"></i>
                 <span>模型训练</span>
               </el-menu-item>
               <el-menu-item index="/home/admin1/task-audit">任务审核</el-menu-item>
@@ -212,6 +214,7 @@
                 <i class="el-icon-connection menu-icon"></i>
                 <span>模型训练</span>
               </template>
+              <el-menu-item index="/home/fedlab-center">FedLab 联邦学习</el-menu-item>
               <el-menu-item index="/home/admin2/model-training">模型训练</el-menu-item>
               <el-menu-item index="/home/admin2/task-participation">任务参与</el-menu-item>
               <el-menu-item index="/home/admin2/task-manage">任务状态管理</el-menu-item>
@@ -229,17 +232,16 @@
           
           <!-- 普通用户菜单 -->
           <template v-if="effectiveUser">
-            <el-menu-item index="/home/model/list" class="menu-item">
-              <i class="el-icon-cpu menu-icon"></i>
-              <span slot="title">模型列表</span>
-            </el-menu-item>
             <el-submenu index="/home/user">
               <template slot="title">
                 <i class="el-icon-crop menu-icon"></i>
-                <span>智能识别</span>
+                <span>模型调用</span>
               </template>
-              <el-menu-item index="/home/user/image-identify">图像识别</el-menu-item>
-              <el-menu-item index="/home/user/history-record">识别记录</el-menu-item>
+              <el-menu-item index="/home/model/list">
+                <span>模型列表</span>
+              </el-menu-item>
+              <el-menu-item index="/home/user/image-identify">推理任务</el-menu-item>
+              <el-menu-item index="/home/user/history-record">调用记录</el-menu-item>
             </el-submenu>
             <el-menu-item index="/home/user/join-farm" class="menu-item" v-if="effectiveUser && (effectiveUser.role === 'user' || effectiveUser.role === 3)">
               <i class="el-icon-office-building menu-icon"></i>
@@ -474,12 +476,15 @@ export default {
       const pageNames = {
         "/home/data-panel": "数据面板",
         "/home/federated-learning": "模型训练",
+        "/home/fedlab-center": "FedLab 联邦学习",
         "/home/audit-log": "审计日志",
         "/home/settings": "系统设置",
         "/home/admin1/user-manage": "用户管理",
         "/home/admin1/model-manage": "模型管理",
         "/home/admin2/model-training": "模型训练",
-        "/home/user/image-identify": "图像识别"
+        "/home/model/list": "模型列表",
+        "/home/user/image-identify": "推理任务",
+        "/home/user/history-record": "调用记录"
       };
       this.currentPageName = pageNames[path] || "数据面板";
     },

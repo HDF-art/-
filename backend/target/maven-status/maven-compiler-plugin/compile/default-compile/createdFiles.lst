@@ -94,7 +94,6 @@ com/agri/controller/AuditRequestController.class
 com/agri/controller/DataTransactionController.class
 com/agri/service/LocalClientService.class
 com/agri/model/SecureMessage.class
-com/agri/controller/FLGoStatusController.class
 com/agri/service/CacheService.class
 com/agri/service/impl/RecognitionRecordServiceImpl.class
 com/agri/dto/NotificationDTO.class
@@ -107,7 +106,6 @@ com/agri/service/impl/TrainingLogServiceImpl.class
 com/agri/service/NotificationService.class
 com/agri/service/DataTransactionService.class
 com/agri/mapper/TrainingTaskMapper.class
-com/agri/controller/FLGoStatusController$TrainingStatus.class
 com/agri/service/SmsSenderService.class
 com/agri/mapper/DataTransactionMapper.class
 com/agri/constant/RoleEnum.class

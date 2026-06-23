@@ -2,7 +2,7 @@
   <div class="history-record">
     <el-card class="record-card">
       <div slot="header" class="card-header">
-        <span>识别记录</span>
+        <span>调用记录</span>
       </div>
       
       <!-- 搜索和筛选 -->
@@ -107,7 +107,7 @@
       
       <!-- 详情对话框 -->
       <el-dialog
-        title="识别记录详情"
+        title="调用记录详情"
         :visible.sync="dialogVisible"
         width="70%"
         :close-on-click-modal="false"
